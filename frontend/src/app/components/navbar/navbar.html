@@ -1,0 +1,10 @@
+<nav class="navbar">
+    <button (click)="logout()" class="nav-left">
+        <span>🌐</span> Red Social
+      </button>
+    <div class="nav-right">
+        <button *ngIf="showAuthButtons" (click)="navegador('publicaciones')">Publicaciones</button>
+        <button *ngIf="showAuthButtons" (click)="navegador('mi-perfil')">Mi Perfil</button>
+        <button *ngIf="showAuthButtons" class="logout" (click)="logout()">Salir</button>
+    </div>
+</nav>

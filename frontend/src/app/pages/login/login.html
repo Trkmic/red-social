@@ -1,0 +1,29 @@
+<div class="container login-container">
+  <h1>Iniciar sesión</h1>
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    
+    <!-- Email / Usuario -->
+    <label>Email o usuario</label>
+    <input type="text" formControlName="emailOrUsername" placeholder="Email o nombre de usuario">
+    <div class="error" *ngIf="loginForm.get('emailOrUsername')?.touched && loginForm.get('emailOrUsername')?.invalid">
+      Este campo es obligatorio
+    </div>
+
+    <!-- Contraseña -->
+    <label>Contraseña</label>
+    <input type="password" formControlName="password" placeholder="Contraseña">
+    <div class="error" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
+      <div *ngIf="loginForm.get('password')?.errors?.['required']">
+        Este campo es obligatorio
+      </div>
+      <div *ngIf="loginForm.get('password')?.errors?.['minlength']">
+        La contraseña debe tener al menos 8 caracteres, una mayuscula y un numero.
+      </div>
+    </div>
+
+    <!-- Botón -->
+    <button type="submit" [disabled]="loginForm.invalid">Ingresar</button>
+  </form>
+
+  <p>¿No tienes cuenta? <button (click)="register()" class="link-button">Registrarse</button></p>
+</div>

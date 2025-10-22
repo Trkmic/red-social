@@ -1,0 +1,27 @@
+.perfil-container {
+    max-width: 600px;
+    margin: 3rem auto;
+    background: white;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    text-align: center;
+}
+.perfil-img {
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 1rem;
+}
+hr {
+    margin: 1.5rem 0;
+    border: none;
+    border-top: 1px solid #eee;
+}
+.mini-post {
+    background: #f9f9f9;
+    border-radius: var(--border-radius);
+    padding: 0.7rem;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}

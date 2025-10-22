@@ -1,0 +1,46 @@
+.post {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+.post-header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+.post-header img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+.message {
+    margin: 1rem 0;
+    font-size: 0.95rem;
+}
+.post-img {
+    width: 100%;
+    border-radius: var(--border-radius);
+    margin-bottom: 0.8rem;
+}
+.actions {
+    display: flex;
+    gap: 1rem;
+}
+.actions button {
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.actions button:hover {
+    background: var(--color-primary-dark);
+}
+.time {
+    font-size: 0.8rem;
+    color: var(--color-muted);
+}
