@@ -1,64 +1,73 @@
-<div class="container registro-container">
-    <h1>Registro</h1>
+<div class="container d-flex justify-content-center my-5">
+  <div class="registro-container card p-4 shadow-sm border-0 w-100">
+
+    <h1 class="text-center text-primary fw-bold mb-4">Registro</h1>
+
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data">
-      <div class="form-grid">
-        <div>
-          <label>Nombre</label>
-          <input type="text" formControlName="nombre" placeholder="Nombre">
+
+      <div class="row g-3">
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Nombre</label>
+          <input type="text" class="form-control" formControlName="nombre" placeholder="Nombre">
         </div>
-  
-        <div>
-          <label>Apellido</label>
-          <input type="text" formControlName="apellido" placeholder="Apellido">
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Apellido</label>
+          <input type="text" class="form-control" formControlName="apellido" placeholder="Apellido">
         </div>
-  
-        <div>
-          <label>Email</label>
-          <input type="email" formControlName="email" placeholder="Email">
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Email</label>
+          <input type="email" class="form-control" formControlName="email" placeholder="Email">
         </div>
-  
-        <div>
-          <label>Usuario</label>
-          <input type="text" formControlName="username" placeholder="Nombre de usuario">
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Usuario</label>
+          <input type="text" class="form-control" formControlName="username" placeholder="Nombre de usuario">
         </div>
-  
-        <div>
-          <label>Contraseña</label>
-          <input type="password" formControlName="password" placeholder="Contraseña">
-          <div class="error" *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid">
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Contraseña</label>
+          <input type="password" class="form-control" formControlName="password" placeholder="Contraseña">
+          <div class="text-danger small mt-1"
+               *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid">
             La contraseña debe tener al menos 8 caracteres, una mayúscula y un número.
           </div>
         </div>
-  
-        <div>
-          <label>Confirmar Contraseña</label>
-          <input type="password" formControlName="confirmPassword" placeholder="Confirmar Contraseña">
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Confirmar Contraseña</label>
+          <input type="password" class="form-control" formControlName="confirmPassword" placeholder="Confirmar Contraseña">
         </div>
-  
-        <div>
-          <label>Fecha de Nacimiento</label>
-          <input type="date" formControlName="fechaNacimiento">
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Fecha de Nacimiento</label>
+          <input type="date" class="form-control" formControlName="fechaNacimiento">
         </div>
-  
-        <div>
-          <label>Descripción</label>
-          <textarea formControlName="descripcion" placeholder="Descripción breve"></textarea>
-        </div>
-  
-        <div>
-          <label>Perfil</label>
-          <select formControlName="perfil">
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Perfil</label>
+          <select class="form-select" formControlName="perfil">
             <option value="usuario">Usuario</option>
             <option value="administrador">Administrador</option>
           </select>
         </div>
-  
-        <div>
-          <label>Foto de Perfil</label>
-          <input type="file" (change)="onFileChange($event)">
+
+        <div class="col-12">
+          <label class="form-label fw-semibold">Descripción</label>
+          <textarea class="form-control" formControlName="descripcion" placeholder="Descripción breve" rows="3"></textarea>
         </div>
+
+        <div class="col-12">
+          <label class="form-label fw-semibold">Foto de Perfil</label>
+          <input type="file" class="form-control" (change)="onFileChange($event)">
+        </div>
+
       </div>
-  
-      <button type="submit" [disabled]="registerForm.invalid">Registrarse</button>
+
+      <button type="submit" class="btn w-100 text-white fw-bold mt-4 register-btn"
+              [disabled]="registerForm.invalid">Registrarse</button>
     </form>
+  </div>
 </div>

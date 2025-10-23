@@ -1,12 +1,19 @@
-<div class="perfil-container">
-    <img src="https://i.pravatar.cc/120" alt="perfil" class="perfil-img">
-    <h2>Pedro</h2>
-    <p>Desarrollador de software en formación. Amante del código y los desafíos 👨‍💻</p>
+<div class="container my-5">
+    <div class="perfil-container card mx-auto text-center p-4 shadow-sm border-0">
 
-    <hr>
-
-    <h3>Mis últimas publicaciones</h3>
-    <div class="mini-post" *ngFor="let i of [1,2,3]">
-        <p><strong>Post {{i}}</strong> — "Esto es una publicación de ejemplo."</p>
+        <img src="https://i.pravatar.cc/120" alt="perfil" class="perfil-img mx-auto mb-3 shadow-sm">
+        <h2 class="fw-semibold">Pedro</h2>
+        <p class="text-muted mb-4">Desarrollador de software en formación. Amante del código y los desafíos 👨‍💻</p>
+    
+        <hr class="my-4">
+    
+        <h3 class="fw-semibold mb-3">Mis últimas publicaciones</h3>
+        
+        <div *ngFor="let i of [1,2,3]" class="mini-post text-start">
+            <p class="mb-0">
+            <strong>Post {{ i }}</strong> — "Esto es una publicación de ejemplo."
+            </p>
+        </div>
+    
     </div>
 </div>

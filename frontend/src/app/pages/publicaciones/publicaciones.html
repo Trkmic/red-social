@@ -1,23 +1,30 @@
-<div class="container">
-    <h2>Publicaciones</h2>
+<div class="container my-5">
 
-    <div class="post" *ngFor="let post of [1,2,3]">
-        <div class="post-header">
-            <img src="https://i.pravatar.cc/50" alt="usuario">
+    <h2 class="mb-4">Publicaciones</h2>
+
+    <div class="post card mb-4 p-3" *ngFor="let post of [1,2,3]">
+    
+        <!-- USUARIO -->
+        <div class="post-header d-flex align-items-center gap-2 mb-2">
+            <img src="https://i.pravatar.cc/50" alt="usuario" class="rounded-circle">
             <div>
             <strong>Usuario {{ post }}</strong>
-            <p class="time">Hace {{ post }} h</p>
+            <p class="time mb-0 small text-muted">Hace {{ post }} h</p>
             </div>
         </div>
-
-        <p class="message">Esta es una publicación de ejemplo número {{ post }}.</p>
-
-        <img class="post-img" *ngIf="post % 2 === 0" src="https://picsum.photos/600/300?random={{post}}" alt="foto">
-
-        <div class="actions">
-            <button>❤️ Me gusta</button>
-            <button>💬 Comentar</button>
+    
+        <!-- Mensaje -->
+        <p class="message mb-2">Esta es una publicación de ejemplo número {{ post }}.</p>
+    
+        <!-- Imagen (si hay) -->
+        <img *ngIf="post % 2 === 0" src="https://picsum.photos/600/300?random={{post}}" alt="foto" class="post-img mb-2 rounded">
+    
+        <!-- MG Y COMENT -->
+        <div class="actions d-flex gap-2">
+            <button class="btn btn-primary btn-sm">❤️ Me gusta</button>
+            <button class="btn btn-primary btn-sm">💬 Comentar</button>
         </div>
+    
     </div>
 
 </div>

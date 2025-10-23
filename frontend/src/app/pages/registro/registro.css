@@ -1,149 +1,43 @@
 .registro-container {
-    margin-top: 3rem;
-    padding: 1.0rem 3rem;
-    max-width: 900px;
-    width: 100%;
-    background: #fff;
-    border-radius: 20px;
-    box-shadow: 0 8px 35px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+  max-width: 900px;
+  border-radius: 20px;
+  box-shadow: 0 8px 35px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
 }
 .registro-container:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 40px rgba(0, 119, 255, 0.15);
 }
-.registro-container h1 {
-  text-align: center;
-  font-size: 2.2rem;
-  margin-bottom: 2rem;
-  color: #0077ff;
-  font-weight: 700;
-}
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem 3rem;
-}
-.registro-container label {
-  display: block;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 0.3rem;
-  font-size: 0.95rem;
-}
-.registro-container input,
-.registro-container textarea {
-  width: 100%;
-  padding: 0.85rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  font-size: 1rem;
-  background: #f9f9f9;
-  transition: all 0.3s ease;
-  resize: none;
-  margin-bottom: 1rem;
-}
-.registro-container input:focus,
-.registro-container textarea:focus {
-  outline: none;
-  border-color: #0077ff;
-  box-shadow: 0 0 10px rgba(0, 119, 255, 0.25);
-  background: #ffffff;
-}
-.registro-container input[type="file"] {
-  border: none;
-  background: none;
-  padding: 0;
-  font-size: 0.9rem;
-  color: #0077ff;
-  cursor: pointer;
-}
-.registro-container input[type="file"]::-webkit-file-upload-button {
-  background: #0077ff;
-  color: white;
-  border: none;
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-.registro-container input[type="file"]::-webkit-file-upload-button:hover {
-  background: #005ad4;
-}
-.registro-container button {
-  padding: 1rem 1.2rem;
+.register-btn {
   background: linear-gradient(135deg, #0077ff, #005ad4);
-  color: #fff;
-  font-weight: 700;
-  border: none;
   border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.25s ease;
+  padding: 1rem;
   font-size: 1rem;
-  margin-top: 1.5rem;
-  width: 100%;
+  transition: all 0.25s ease;
 }
-.registro-container button:hover:not(:disabled) {
+.register-btn:hover:not(:disabled) {
   transform: translateY(-2px) scale(1.02);
   box-shadow: 0 6px 15px rgba(0, 119, 255, 0.3);
 }
-.registro-container button:disabled {
-  background: #ccc;
+.register-btn:disabled {
+  background: #ccc !important;
   cursor: not-allowed;
 }
-.registro-container .error {
-  color: #e74c3c;
-  font-size: 0.85rem;
+input[type="file"] {
+  padding: 0.4rem 0.75rem;
 }
-.registro-container select {
-  width: 100%;
-  padding: 0.9rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: var(--border-radius);
-  font-size: 1rem;
-  background: linear-gradient(135deg, #fdfdfd, #f7f9fc);
-  color: var(--color-text);
-  appearance: none; /* quita el estilo nativo */
-  transition: var(--transition);
+input[type="file"]::-webkit-file-upload-button {
+  background: #0077ff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
 }
-.registro-container select:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 8px rgba(0, 119, 255, 0.3);
-  background: #fff;
+input[type="file"]::-webkit-file-upload-button:hover {
+  background: #005ad4;
 }
-.registro-container select option {
-  background: #fff;
-  color: #333;
-  padding: 0.8rem;
-}
-.registro-container select:hover {
-  background: linear-gradient(135deg, #fefefe, #f3f6fb);
-  transform: translateY(-1px);
-}
-.registro-container label[for="perfil"] {
-  font-weight: 600;
-  color: var(--color-primary-dark);
-}
-@keyframes pulse-select {
-  0% { box-shadow: 0 0 0 rgba(0, 119, 255, 0.4); }
-  70% { box-shadow: 0 0 10px rgba(0, 119, 255, 0); }
-  100% { box-shadow: 0 0 0 rgba(0, 119, 255, 0); }
-}
-.registro-container select:focus {
-  animation: pulse-select 1s;
-}
-@media (max-width: 768px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  .registro-container {
-    margin: 2rem 1rem;
-    padding: 2rem 1.5rem;
-  }
-}
+
   

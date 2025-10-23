@@ -14,6 +14,7 @@ import Swal from 'sweetalert2';
 })
 export class Login implements OnInit {
   loginForm!: FormGroup;
+  loading = false;
 
   constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {}
 
@@ -33,18 +34,17 @@ export class Login implements OnInit {
 
   onSubmit() {
     if (this.loginForm.valid) {
+      this.loading = true; // bloqueamos todo el formulario
+  
       this.auth.login(this.loginForm.value).subscribe({
         next: () => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Login exitoso',
-            text: 'Bienvenido 👋',
-            confirmButtonColor: '#3085d6'
-          }).then(() => {
+          setTimeout(() => {
+            this.loading = false;
             this.router.navigate(['/publicaciones']);
-          });
+          }, 1000); // tiempo para ver spinner
         },
         error: (err) => {
+          this.loading = false;
           Swal.fire({
             icon: 'error',
             title: 'Error de login',
@@ -55,6 +55,7 @@ export class Login implements OnInit {
       });
     }
   }
+  
 
   register() {
     this.router.navigate(['/registro']);

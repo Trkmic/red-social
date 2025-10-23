@@ -1,10 +1,25 @@
-<nav class="navbar">
-    <button (click)="logout()" class="nav-left">
-        <span>🌐</span> Red Social
-      </button>
-    <div class="nav-right">
-        <button *ngIf="showAuthButtons" (click)="navegador('publicaciones')">Publicaciones</button>
-        <button *ngIf="showAuthButtons" (click)="navegador('mi-perfil')">Mi Perfil</button>
-        <button *ngIf="showAuthButtons" class="logout" (click)="logout()">Salir</button>
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <div class="container d-flex justify-content-between align-items-center">
+    
+        <!-- Logo / Nombre -->
+        <span class="fw-bold fs-5 text-success d-flex align-items-center gap-2"  
+        style="cursor: pointer;"
+        (click)="logout()">
+            🌐 Red Social
+        </span>
+    
+        <!-- Botones dinámicos -->
+        <div class="d-flex align-items-center">
+            <button *ngIf="showPublicaciones" class="btn btn-outline-primary me-2" (click)="navegador('publicaciones')">
+            Publicaciones
+            </button>
+            <button *ngIf="showMiPerfil" class="btn btn-outline-primary me-2" (click)="navegador('mi-perfil')">
+            Mi Perfil
+            </button>
+            <button *ngIf="showSalir" class="btn btn-danger" (click)="logout()">
+            Salir
+            </button>
+        </div>
+    
     </div>
 </nav>
