@@ -12,7 +12,12 @@ export class AuthService {
 
     login(data: any): Observable<any> {
         return this.http.post(`${this.baseUrl}/login`, data).pipe(
-        tap((res: any) => localStorage.setItem('token', res.token))
+            tap((res: any) => {
+                // Guardamos token
+                localStorage.setItem('token', res.token);
+                // Guardamos usuario completo
+                localStorage.setItem('usuario', JSON.stringify(res.usuario));
+            })
         );
     }
 
@@ -22,6 +27,7 @@ export class AuthService {
 
     logout() {
         localStorage.removeItem('token');
+        localStorage.removeItem('usuario');
     }
 
     getToken() {
@@ -30,5 +36,19 @@ export class AuthService {
 
     isLoggedIn(): boolean {
         return !!this.getToken();
+    }
+
+    // Nuevo método para obtener usuario logueado
+    getUsuarioLogueado(): any {
+        const user = localStorage.getItem('usuario');
+        if (!user) return null;
+        
+        try {
+            return JSON.parse(user);
+        } catch (e) {
+            console.error('Error al parsear el usuario desde localStorage', e);
+            localStorage.removeItem('usuario'); // opcional: limpiar si está corrupto
+            return null;
+        }
     }
 }

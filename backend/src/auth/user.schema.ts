@@ -1,10 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { IUser } from './user.interface';
 
-export type UserDocument = User & Document;
+export type UserDocument = User & Document & IUser;
 
 @Schema()
-export class User {
+export class User implements IUser {
     @Prop({ required: true })
     nombre: string;
 
@@ -15,22 +16,22 @@ export class User {
     email: string;
 
     @Prop({ required: true, unique: true })
-    username: string;
+    nombreUsuario: string;
 
     @Prop({ required: true })
     password: string;
 
     @Prop({ required: true })
-    descripcion?: string;
+    fechaNacimiento: string;
 
-    @Prop({ required: true})
-    fechaNacimiento?: Date;
-
-    @Prop()
-    profileImage?: string;
+    @Prop({ required: true })
+    descripcion: string;
 
     @Prop({ default: 'usuario' })
-    perfil: string;
+    perfil: 'usuario' | 'administrador';
+
+    @Prop()
+    imagenPerfil?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

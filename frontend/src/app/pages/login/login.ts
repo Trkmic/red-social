@@ -10,8 +10,9 @@ import Swal from 'sweetalert2';
   selector: 'app-login',
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.html',
-  styleUrl: './login.css'
+  styleUrls: ['./login.css']
 })
+
 export class Login implements OnInit {
   loginForm!: FormGroup;
   loading = false;
@@ -20,31 +21,31 @@ export class Login implements OnInit {
 
   ngOnInit() {
     this.loginForm = this.fb.group({
-      emailOrUsername: ['', [Validators.required]],
-      password: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(8),
-          Validators.pattern(/^(?=.*[A-Z])(?=.*\d).{8,}$/)
-        ]
-      ]
+      emailOrUsername: [{ value: '', disabled: this.loading }, Validators.required],
+      password: [{ value: '', disabled: this.loading }, [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.pattern(/^(?=.*[A-Z])(?=.*\d).{8,}$/)
+      ]]
     });
   }
 
   onSubmit() {
     if (this.loginForm.valid) {
-      this.loading = true; // bloqueamos todo el formulario
-  
+      this.loading = true;
+      this.loginForm.disable(); // Bloquea el formulario mientras carga
+
       this.auth.login(this.loginForm.value).subscribe({
-        next: () => {
+        next: (res) => {
           setTimeout(() => {
             this.loading = false;
+            this.loginForm.enable(); // Vuelve a habilitar el formulario
             this.router.navigate(['/publicaciones']);
-          }, 1000); // tiempo para ver spinner
+          }, 1000);
         },
         error: (err) => {
           this.loading = false;
+          this.loginForm.enable(); // Siempre habilitar de nuevo
           Swal.fire({
             icon: 'error',
             title: 'Error de login',
@@ -55,7 +56,6 @@ export class Login implements OnInit {
       });
     }
   }
-  
 
   register() {
     this.router.navigate(['/registro']);

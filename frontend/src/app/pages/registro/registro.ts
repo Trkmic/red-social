@@ -39,7 +39,24 @@ export class Registro {
   }
 
   onFileChange(event: any) {
-    this.selectedFile = event.target.files[0];
+    const file: File = event.target.files[0];
+    if (!file) return;
+
+    // Validar tipo de imagen
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/tiff'];
+    if (!allowedTypes.includes(file.type)) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Archivo no válido',
+        text: 'Solo se permiten imágenes JPG, PNG, GIF o TIFF',
+        confirmButtonColor: '#f0ad4e'
+      });
+      this.selectedFile = null;
+      event.target.value = ''; // limpiar input
+      return;
+    }
+
+    this.selectedFile = file;
   }
 
   onSubmit() {
@@ -47,7 +64,22 @@ export class Registro {
       this.registerForm.valid &&
       this.registerForm.value.password === this.registerForm.value.confirmPassword
     ) {
-      this.authService.register(this.registerForm.value).subscribe({
+      const formData = new FormData();
+
+      // Mapear campos del formulario al backend
+      Object.entries(this.registerForm.value).forEach(([key, value]) => {
+        if (key === 'username') {
+          formData.append('nombreUsuario', value as string); // backend espera nombreUsuario
+        } else if (key !== 'confirmPassword') { // no enviar confirmPassword
+          formData.append(key, value as string);
+        }
+      });
+
+      if (this.selectedFile) {
+        formData.append('imagenPerfil', this.selectedFile);
+      }
+
+      this.authService.register(formData).subscribe({
         next: () => {
           Swal.fire({
             icon: 'success',
@@ -62,7 +94,7 @@ export class Registro {
           Swal.fire({
             icon: 'error',
             title: 'Error al registrar',
-            text: 'Ocurrió un problema, intenta nuevamente',
+            text: err.error?.message || 'Ocurrió un problema, intenta nuevamente',
             confirmButtonColor: '#d33'
           });
         }

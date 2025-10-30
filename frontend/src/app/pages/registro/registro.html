@@ -9,27 +9,27 @@
 
         <div class="col-md-6">
           <label class="form-label fw-semibold">Nombre</label>
-          <input type="text" class="form-control" formControlName="nombre" placeholder="Nombre">
+          <input type="text" class="form-control" formControlName="nombre" placeholder="Nombre" appAutofocus appResaltarInvalido>
         </div>
 
         <div class="col-md-6">
           <label class="form-label fw-semibold">Apellido</label>
-          <input type="text" class="form-control" formControlName="apellido" placeholder="Apellido">
+          <input type="text" class="form-control" formControlName="apellido" placeholder="Apellido" appResaltarInvalido>
         </div>
 
         <div class="col-md-6">
           <label class="form-label fw-semibold">Email</label>
-          <input type="email" class="form-control" formControlName="email" placeholder="Email">
+          <input type="email" class="form-control" formControlName="email" placeholder="Email" appResaltarInvalido>
         </div>
 
         <div class="col-md-6">
           <label class="form-label fw-semibold">Usuario</label>
-          <input type="text" class="form-control" formControlName="username" placeholder="Nombre de usuario">
+          <input type="text" class="form-control" formControlName="username" placeholder="Nombre de usuario" appResaltarInvalido>
         </div>
 
         <div class="col-md-6">
           <label class="form-label fw-semibold">Contraseña</label>
-          <input type="password" class="form-control" formControlName="password" placeholder="Contraseña">
+          <input type="password" class="form-control" formControlName="password" placeholder="Contraseña" appResaltarInvalido>
           <div class="text-danger small mt-1"
                *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid">
             La contraseña debe tener al menos 8 caracteres, una mayúscula y un número.
@@ -38,12 +38,12 @@
 
         <div class="col-md-6">
           <label class="form-label fw-semibold">Confirmar Contraseña</label>
-          <input type="password" class="form-control" formControlName="confirmPassword" placeholder="Confirmar Contraseña">
+          <input type="password" class="form-control" formControlName="confirmPassword" placeholder="Confirmar Contraseña" appResaltarInvalido>
         </div>
 
         <div class="col-md-6">
           <label class="form-label fw-semibold">Fecha de Nacimiento</label>
-          <input type="date" class="form-control" formControlName="fechaNacimiento">
+          <input type="date" class="form-control" formControlName="fechaNacimiento" appResaltarInvalido>
         </div>
 
         <div class="col-md-6">
@@ -62,6 +62,7 @@
         <div class="col-12">
           <label class="form-label fw-semibold">Foto de Perfil</label>
           <input type="file" class="form-control" (change)="onFileChange($event)">
+          <small class="text-muted">Solo se permiten JPG, PNG, GIF o TIFF</small>
         </div>
 
       </div>

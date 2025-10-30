@@ -16,7 +16,7 @@
       <!-- Email / Usuario -->
       <div class="mb-3">
         <label class="form-label fw-semibold">Email o usuario</label>
-        <input type="text" class="form-control" formControlName="emailOrUsername" placeholder="Email o nombre de usuario" [disabled]="loading">
+        <input type="text" class="form-control" formControlName="emailOrUsername" placeholder="Email o nombre de usuario" appAutofocus appResaltarInvalido>
         <div class="text-danger small mt-1"
           *ngIf="loginForm.get('emailOrUsername')?.touched && loginForm.get('emailOrUsername')?.invalid">
           Este campo es obligatorio
@@ -26,7 +26,7 @@
       <!-- Contraseña -->
       <div class="mb-3">
         <label class="form-label fw-semibold">Contraseña</label>
-        <input type="password" class="form-control" formControlName="password" placeholder="Contraseña" [disabled]="loading">
+        <input type="password" class="form-control" formControlName="password" placeholder="Contraseña" appResaltarInvalido>
         <div class="text-danger small mt-1"
           *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
           <div *ngIf="loginForm.get('password')?.errors?.['required']">
@@ -39,15 +39,15 @@
       </div>
 
       <!-- Botón -->
-      <button type="submit" class="btn w-100 text-white fw-semibold login-btn">
-        Ingresar
+      <button type="submit" class="btn w-100 text-white fw-semibold login-btn" appClickControl>
+        {{ loading ? 'Ingresando...' : 'Ingresar' }}
       </button>
 
     </form>
 
     <p class="text-center mt-3 text-muted">
       ¿No tienes cuenta?
-      <button (click)="register()" class="btn btn-link p-0 link-button" [disabled]="loading">Registrarse</button>
+      <button (click)="register()" class="btn btn-link p-0 link-button" appClickControl>Registrarse</button>
     </p>
 
   </div>

@@ -1,6 +1,6 @@
 .post {
     background: #fff;
-    border-radius: var(--border-radius);
+    border-radius: 0.5rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     padding: 1rem;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -11,21 +11,20 @@
 }
 .post-img {
     width: 100%;
-    border-radius: var(--border-radius);
+    border-radius: 0.5rem;
 }
 .actions .btn-primary {
-    background: var(--color-primary);
+    background: #0d6efd;
     border: none;
-    border-radius: var(--border-radius);
-    transition: var(--transition);
 }
-.actions .btn-primary:hover {
-    background: var(--color-primary-dark);
+.actions .btn-outline-primary {
+    border-color: #0d6efd;
+    color: #0d6efd;
 }
 .message {
     font-size: 0.95rem;
 }
 .time {
     font-size: 0.8rem;
-    color: var(--color-muted);
+    color: #6c757d;
 }
