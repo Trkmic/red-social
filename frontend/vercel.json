@@ -1,11 +1,7 @@
 {
     "version": 2,
-    "builds": [
-        {
-            "src": "frontend/dist/red-social/browser/**/*",
-            "use": "@vercel/static"
-        }
-    ],
+    "buildCommand": "cd frontend && npm install && npm run build",
+    "outputDirectory": "frontend/dist/red-social/browser",
     "routes": [
         {
             "src": "/(.*)",
