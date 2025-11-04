@@ -5,49 +5,51 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class AuthService {
-    private baseUrl = environment.apiUrl;
+  private baseUrl = environment.apiUrl;
 
-    constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {}
 
-    register(formData: FormData) {
-        return this.http.post(`${this.baseUrl}/register`, formData);
-    }
+  register(formData: FormData) {
+    // 🔹 Cambiamos la ruta a /auth/register
+    return this.http.post(`${this.baseUrl}/auth/register`, formData);
+  }
 
-    login(data: any): Observable<any> {
-        return this.http.post(`${this.baseUrl}/login`, data).pipe(
-        tap((res: any) => {
-            if (res.token) {
-            localStorage.setItem('token', res.token);
-            localStorage.setItem('usuario', JSON.stringify(res.user));
-            }
-        })
-        );
-    }
-
-    logout() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('usuario');
-    }
-
-    getToken() {
-        return localStorage.getItem('token');
-    }
-
-    isLoggedIn(): boolean {
-        return !!this.getToken();
-    }
-
-    getUsuarioLogueado(): any {
-        const user = localStorage.getItem('usuario');
-        if (!user) return null;
-        try {
-        return JSON.parse(user);
-        } catch {
-        localStorage.removeItem('usuario');
-        return null;
+  login(data: any): Observable<any> {
+    // 🔹 Cambiamos la ruta a /auth/login
+    return this.http.post(`${this.baseUrl}/auth/login`, data).pipe(
+      tap((res: any) => {
+        if (res.token) {
+          localStorage.setItem('token', res.token);
+          localStorage.setItem('usuario', JSON.stringify(res.user));
         }
+      })
+    );
+  }
+
+  logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+  }
+
+  getToken() {
+    return localStorage.getItem('token');
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.getToken();
+  }
+
+  getUsuarioLogueado(): any {
+    const user = localStorage.getItem('usuario');
+    if (!user) return null;
+    try {
+      return JSON.parse(user);
+    } catch {
+      localStorage.removeItem('usuario');
+      return null;
     }
+  }
 }
