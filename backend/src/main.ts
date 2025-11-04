@@ -7,18 +7,19 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
 
-  // ✅ Habilitar CORS para Render + Vercel + desarrollo local
+  // ✅ CORS para local + Vercel (frontend)
   app.enableCors({
     origin: [
-      'http://localhost:4200', // desarrollo local
-      'https://red-social-sage.vercel.app' // 🔹 tu frontend en Vercel
+      'http://localhost:4200',
+      'https://red-social-sage.vercel.app',
     ],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'], // 🔹 agrega esto
   });
 
   const port = process.env.PORT || 3000;
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0'); // 🔹 importante para Render
   console.log(`✅ Servidor corriendo en puerto ${port}`);
 }
 
