@@ -1,10 +1,15 @@
 {
     "version": 2,
     "builds": [
-        { "src": "angular.json", "use": "@vercel/angular" }
+        {
+            "src": "frontend/dist/red-social/browser/**/*",
+            "use": "@vercel/static"
+        }
     ],
     "routes": [
-        { "src": "/(.*)", "dest": "/index.html" }
-    ],
-    "outputDirectory": "dist/red-social/browser"
+        {
+            "src": "/(.*)",
+            "dest": "/index.html"
+        }
+    ]
 }
