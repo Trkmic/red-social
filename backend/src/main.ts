@@ -7,20 +7,27 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
 
-  // ✅ CORS para local + Vercel (frontend)
+  // ✅ Configuración robusta de CORS
   app.enableCors({
     origin: [
-      'http://localhost:4200',
-      'https://red-social-sage.vercel.app',
+      'http://localhost:4200', // desarrollo local
+      'https://red-social-sage.vercel.app', // dominio de producción en Vercel
+      'https://red-social-gxjeq06pf-ignacios-projects-d7c4c7c5.vercel.app', // build temporal Vercel
     ],
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'], // 🔹 importante para JWT o formularios
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization'], // 🔹 agrega esto
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   });
 
   const port = process.env.PORT || 3000;
-  await app.listen(port, '0.0.0.0'); // 🔹 importante para Render
+  await app.listen(port, '0.0.0.0'); // 🔹 necesario para Render
   console.log(`✅ Servidor corriendo en puerto ${port}`);
+  console.log(`🌐 CORS habilitado para:`);
+  console.log(`   - http://localhost:4200`);
+  console.log(`   - https://red-social-sage.vercel.app`);
+  console.log(`   - https://red-social-gxjeq06pf-ignacios-projects-d7c4c7c5.vercel.app`);
 }
 
 bootstrap();
