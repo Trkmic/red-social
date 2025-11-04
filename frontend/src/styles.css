@@ -1,5 +1,4 @@
 :root {
-    --color-bg: #f5f7fa;
     --color-primary: #0077ff;
     --color-primary-dark: #005ecc;
     --color-text: #222;
@@ -7,75 +6,38 @@
     --border-radius: 10px;
     --transition: all 0.25s ease;
 }
-
-/* Reset básico */
-* {
+/* Fondo animado */
+.app-background {
+    min-height: 100vh;
+    width: 100%;
+    background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #a18cd1, #fbc2eb);
+    background-size: 400% 400%;
+    animation: gradientBG 20s ease infinite;
+  }
+  
+  @keyframes gradientBG {
+    0% { background-position:0% 50%; }
+    50% { background-position:100% 50%; }
+    100% { background-position:0% 50%; }
+  }
+  
+  /* Reset de márgenes de Bootstrap */
+  body, html {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Inter', system-ui, sans-serif;
-    background-color: var(--color-bg);
-    color: var(--color-text);
-    min-height: 100vh;
-}
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+  }
+  
+  /* Evitar que el container interno genere bordes blancos */
+  main, app-navbar, app-footer {
+    width: 100%;
+  }
 
 /* Títulos */
 h1, h2 {
     font-weight: 600;
     margin-bottom: 1rem;
     color: var(--color-text);
-}
-
-/* Footer */
-.footer {
-    background: #fff;
-    border-top: 1px solid #eee;
-    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.05);
-    padding: 0.5rem;
-    font-size: 0.9rem;
-}
-
-.footer-content {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 0 1rem;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    text-align: center;
-    gap: 1rem;
-}
-
-.footer p {
-    color: var(--color-muted);
-    margin: 0;
-}
-
-.footer-social {
-    display: flex;
-    gap: 1.5rem;
-    align-items: center;
-}
-
-.footer-social a img {
-    width: 40px;
-    height: 40px;
-    opacity: 0.8;
-    transition: var(--transition);
-}
-
-.footer-social a img:hover {
-    opacity: 1;
-    transform: scale(1.15);
-}
-
-@media (max-width: 600px) {
-    .footer-content {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
 }

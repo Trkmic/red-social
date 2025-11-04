@@ -1,18 +1,52 @@
+/* Navbar general */
+.navbar {
+    background: rgba(255, 255, 255, 0.2); /* semi-transparente */
+    backdrop-filter: blur(10px);          /* efecto glassmorphism */
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+/* Logo / izquierda */
 .nav-left {
-    color: #4CAF50;
+    display: flex;
+    align-items: center;
+    color: #fff; /* blanco para que resalte sobre el fondo */
+    font-weight: bold;
     transition: color 0.3s ease, transform 0.2s ease;
 }
+
 .nav-left:hover {
-    color: #45a049;
+    color: #ffd700; /* dorado suave al pasar el mouse */
     transform: scale(1.05);
 }
+
 .nav-left span:first-child {
     font-size: 1.8rem;
+    margin-right: 0.4rem;
 }
+
+/* Botones / derecha */
+.nav-right .btn-outline-primary {
+    color: #fff; /* blanco para armonizar con el fondo */
+    border-color: rgba(255,255,255,0.6);
+    transition: all 0.3s ease;
+}
+
 .nav-right .btn-outline-primary:hover {
-    background-color: var(--color-primary);
+    background-color: rgba(255,255,255,0.3);
     color: #fff;
+    border-color: #fff;
 }
-.btn-danger:hover {
-    background-color: #d63232;
+
+.nav-right .btn-danger {
+    background-color: rgba(255, 0, 0, 0.6);
+    border-color: rgba(255, 0, 0, 0.6);
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+.nav-right .btn-danger:hover {
+    background-color: rgba(255, 0, 0, 0.8);
+    border-color: rgba(255, 0, 0, 0.8);
 }

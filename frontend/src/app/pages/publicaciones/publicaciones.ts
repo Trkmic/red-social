@@ -14,6 +14,7 @@ import { ReactiveFormsModule } from '@angular/forms';
   imports: [CommonModule, ReactiveFormsModule, LimitadorCaracteresPipe,FormateoHoraPipe,MayusculaLetraPipe],
   styleUrls: ['./publicaciones.css']
 })
+
 export class Publicaciones implements OnInit {
   publicaciones: Publicacion[] = [];
   formPublicacion: FormGroup;
@@ -24,7 +25,7 @@ export class Publicaciones implements OnInit {
   constructor(
     private pubService: PublicacionesService,
     private authService: AuthService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
   ) {
     // Inicializamos el formulario desde el constructor
     this.formPublicacion = this.fb.group({
@@ -33,6 +34,8 @@ export class Publicaciones implements OnInit {
       imagen: [null]
     });
   }
+
+  
 
   ngOnInit(): void {
     this.usuarioLogueado = this.authService.getUsuarioLogueado();
@@ -97,5 +100,6 @@ export class Publicaciones implements OnInit {
       }
     });
   }
+
 }
 

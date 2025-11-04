@@ -1,11 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { IUser } from './user.interface';
 
-export type UserDocument = User & Document & IUser;
+export type UserDocument = User & Document;
 
 @Schema()
-export class User implements IUser {
+export class User {
     @Prop({ required: true })
     nombre: string;
 
@@ -35,3 +34,15 @@ export class User implements IUser {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+export interface IUser {
+    nombre: string;
+    apellido: string;
+    email: string;
+    nombreUsuario: string;
+    password: string;
+    fechaNacimiento: string;
+    descripcion: string;
+    perfil: 'usuario' | 'administrador';
+    imagenPerfil?: string;
+}

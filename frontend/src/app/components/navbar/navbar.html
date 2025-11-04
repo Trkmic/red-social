@@ -1,25 +1,23 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+<nav class="navbar navbar-expand-lg navbar-light shadow-sm sticky-top">
     <div class="container d-flex justify-content-between align-items-center">
     
         <!-- Logo / Nombre -->
-        <span class="fw-bold fs-5 text-success d-flex align-items-center gap-2"  
-        style="cursor: pointer;"
-        (click)="logout()">
-            🌐 Red Social
-        </span>
+        <div class="nav-left" (click)="logout()" style="cursor:pointer;">
+            <span>🌐</span>
+            <span>Incleim</span>
+        </div>
     
         <!-- Botones dinámicos -->
-        <div class="d-flex align-items-center">
-            <button *ngIf="showPublicaciones" class="btn btn-outline-primary me-2" (click)="navegador('publicaciones')">
+        <div class="nav-right d-flex align-items-center gap-2">
+            <button *ngIf="showPublicaciones" class="btn btn-outline-primary" (click)="navegador('publicaciones')">
             Publicaciones
             </button>
-            <button *ngIf="showMiPerfil" class="btn btn-outline-primary me-2" (click)="navegador('mi-perfil')">
+            <button *ngIf="showMiPerfil" class="btn btn-outline-primary" (click)="navegador('mi-perfil')">
             Mi Perfil
             </button>
             <button *ngIf="showSalir" class="btn btn-danger" (click)="logout()">
             Salir
             </button>
         </div>
-    
     </div>
 </nav>

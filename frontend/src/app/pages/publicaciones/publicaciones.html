@@ -1,54 +1,53 @@
-<div class="container my-5">
+<div class="feed-background">
 
-    <h2 class="mb-4">Publicaciones</h2>
-
-    <!-- Formulario para nueva publicación -->
-    <form [formGroup]="formPublicacion" (ngSubmit)="crearPublicacion()" class="mb-4">
-        <div class="mb-2">
-            <input formControlName="titulo" type="text" class="form-control" placeholder="Título" appResaltarInvalido>
-        </div>
-        <div class="mb-2">
-            <textarea formControlName="mensaje" class="form-control" placeholder="Mensaje"></textarea>
-        </div>
-        <div class="mb-2">
-            <input type="file" (change)="onFileChange($event)" class="form-control" appResaltarInvalido>
-        </div>
-        <button type="submit" class="btn btn-primary" [attr.disabled]="loading ? true : null" appClickControl>
-            {{ loading ? 'Publicando...' : 'Publicar' }}
+    <div class="feed-container">
+  
+      <h2 class="feed-title mb-4 text-center">Publicaciones</h2>
+  
+      <!-- Formulario nueva publicación -->
+      <form [formGroup]="formPublicacion" (ngSubmit)="crearPublicacion()" class="new-post-form mb-4">
+        <input formControlName="titulo" type="text" class="form-control" placeholder="Título" appResaltarInvalido>
+        <textarea formControlName="mensaje" class="form-control" placeholder="Mensaje"></textarea>
+        <input type="file" (change)="onFileChange($event)" class="form-control" appResaltarInvalido>
+        <button type="submit" class="btn post-btn" [attr.disabled]="loading ? true : null" appClickControl>
+          {{ loading ? 'Publicando...' : 'Publicar' }}
         </button>
-    </form>
-
-    <!-- Lista de publicaciones -->
-    <div class="post card mb-4 p-3" *ngFor="let post of publicaciones">
-    
-        <!-- USUARIO -->
-        <div class="post-header d-flex align-items-center gap-2 mb-2">
-            <img src="https://i.pravatar.cc/50?u={{post.usuarioId._id}}" alt="usuario" class="rounded-circle">
+      </form>
+  
+      <!-- Lista de publicaciones -->
+      <div class="posts-feed">
+        <div class="post-card" *ngFor="let post of publicaciones">
+  
+          <!-- Usuario -->
+          <div class="post-header d-flex align-items-center gap-3 mb-2">
+            <img src="https://i.pravatar.cc/50?u={{post.usuarioId._id}}" 
+                 alt="Foto de {{ post.usuarioId.username }}" class="rounded-circle">
             <div>
-            <strong>{{ post.usuarioId.username| MayusculaLetra }}</strong>
-            <p class="time mb-0 small text-muted">{{ post.createdAt | FormateoHora }}</p>
+              <strong>{{ post.usuarioId.username | MayusculaLetra }}</strong>
+              <p class="time mb-0 small">{{ post.createdAt | FormateoHora }}</p>
             </div>
-        </div>
-    
-        <!-- Mensaje -->
-        <p class="message mb-2">{{ post.mensaje | limitadorCaracteres }}</p>
-    
-        <!-- Imagen (si hay) -->
-        <img *ngIf="post.imagen" [src]="post.imagen" alt="foto" class="post-img mb-2 rounded">
-    
-        <!-- Me gusta y comentarios -->
-        <div class="actions d-flex gap-2">
+          </div>
+  
+          <!-- Mensaje -->
+          <p class="post-message">{{ post.mensaje | limitadorCaracteres }}</p>
+  
+          <!-- Imagen -->
+          <img *ngIf="post.imagen" [src]="post.imagen" alt="Foto de publicación" class="post-img mb-2 rounded">
+  
+          <!-- Acciones -->
+          <div class="actions d-flex gap-2 mt-2">
             <button class="btn btn-sm"
-                    [ngClass]="{
-                    'btn-primary': post.likes.includes(usuarioLogueado?._id),
-                    'btn-outline-primary': !post.likes.includes(usuarioLogueado?._id)
-                    }"
+                    [ngClass]="{'btn-primary': post.likes.includes(usuarioLogueado?._id),
+                                'btn-outline-primary': !post.likes.includes(usuarioLogueado?._id)}"
                     (click)="toggleLike(post)">
-            ❤️ {{ post.likes.length }}
+              ❤️ {{ post.likes.length }}
             </button>
             <button class="btn btn-outline-secondary btn-sm">💬 Comentar</button>
+          </div>
+  
         </div>
-    
+      </div>
+  
     </div>
-
-</div>
+  </div>
+  

@@ -1,28 +1,29 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
-    private baseUrl = 'http://localhost:3000/auth';
+    private apiUrl = 'http://localhost:3000/auth';
 
     constructor(private http: HttpClient) {}
 
-    login(data: any): Observable<any> {
-        return this.http.post(`${this.baseUrl}/login`, data).pipe(
-            tap((res: any) => {
-                // Guardamos token
-                localStorage.setItem('token', res.token);
-                // Guardamos usuario completo
-                localStorage.setItem('usuario', JSON.stringify(res.usuario));
-            })
-        );
+    register(formData: FormData) {
+        return this.http.post(`${this.apiUrl}/register`, formData);
     }
 
-    register(data: any): Observable<any> {
-        return this.http.post(`${this.baseUrl}/register`, data);
+    login(data: any): Observable<any> {
+        return this.http.post(`${this.apiUrl}/login`, data).pipe(
+        tap((res: any) => {
+            if (res.token) {
+            localStorage.setItem('token', res.token);
+            localStorage.setItem('usuario', JSON.stringify(res.user));
+            }
+        })
+        );
     }
 
     logout() {
@@ -38,17 +39,14 @@ export class AuthService {
         return !!this.getToken();
     }
 
-    // Nuevo método para obtener usuario logueado
     getUsuarioLogueado(): any {
         const user = localStorage.getItem('usuario');
         if (!user) return null;
-        
         try {
-            return JSON.parse(user);
-        } catch (e) {
-            console.error('Error al parsear el usuario desde localStorage', e);
-            localStorage.removeItem('usuario'); // opcional: limpiar si está corrupto
-            return null;
+        return JSON.parse(user);
+        } catch {
+        localStorage.removeItem('usuario');
+        return null;
         }
     }
 }

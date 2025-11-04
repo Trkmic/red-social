@@ -1,32 +1,76 @@
+/* Card tipo registro */
 .registro-container {
-  max-width: 900px;
+  background: rgba(255, 255, 255, 0.85); /* semitransparente para que se vea el fondo */
+  max-width: 650px;
   border-radius: 20px;
-  box-shadow: 0 8px 35px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
+
 .registro-container:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 119, 255, 0.15);
+  box-shadow: 0 14px 50px rgba(0, 0, 0, 0.2);
 }
-.register-btn {
-  background: linear-gradient(135deg, #0077ff, #005ad4);
-  border-radius: 10px;
-  padding: 1rem;
-  font-size: 1rem;
+
+/* Títulos */
+.registro-container h1 {
+  color: #0077ff;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Inputs y select */
+.registro-container .form-control,
+.registro-container .form-select,
+.registro-container textarea {
+  border-radius: 12px;
+  border: 1px solid #d1d9e6;
+  padding: 0.75rem 1rem;
   transition: all 0.25s ease;
 }
-.register-btn:hover:not(:disabled) {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 6px 15px rgba(0, 119, 255, 0.3);
+
+.registro-container .form-control:focus,
+.registro-container .form-select:focus,
+.registro-container textarea:focus {
+  border-color: #0077ff;
+  box-shadow: 0 0 0 3px rgba(0, 119, 255, 0.2);
+  outline: none;
 }
-.register-btn:disabled {
+
+/* Botón */
+.registro-container button[type="submit"] {
+  background: linear-gradient(135deg, #0077ff, #005ad4);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 0.9rem;
+  font-size: 1rem;
+  transition: all 0.25s ease;
+  border: none;
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+.registro-container button[type="submit"]:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 20px rgba(0, 119, 255, 0.3);
+  cursor: pointer;
+}
+
+.registro-container button[type="submit"]:disabled {
   background: #ccc !important;
   cursor: not-allowed;
 }
+
+/* Inputs file */
 input[type="file"] {
   padding: 0.4rem 0.75rem;
 }
+
 input[type="file"]::-webkit-file-upload-button {
   background: #0077ff;
   color: #fff;
@@ -36,8 +80,18 @@ input[type="file"]::-webkit-file-upload-button {
   cursor: pointer;
   transition: all 0.3s ease;
 }
+
 input[type="file"]::-webkit-file-upload-button:hover {
   background: #005ad4;
 }
 
-  
+/* Imagen de preview */
+.registro-container img {
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border: 2px solid #0077ff;
+  margin-top: 1rem;
+}

@@ -1,16 +1,33 @@
 .footer {
     font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.15); /* semi-transparente */
+    backdrop-filter: blur(10px);            /* efecto glassmorphism */
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.1);
+    padding: 0.75rem 1rem;
+    color: #fff; /* texto blanco para resaltar sobre fondo animado */
+    width: 100%;
+    position: relative; /* para que siempre se quede abajo con mt-auto en flex column */
+    z-index: 5;
 }
+
+.footer p {
+    margin: 0;
+    color: rgba(255,255,255,0.8);
+}
+
 .footer-social img.social-icon {
     width: 45px;
     height: 45px;
     opacity: 0.8;
     transition: transform 0.25s ease, opacity 0.25s ease;
 }
+
 .footer-social img.social-icon:hover {
     opacity: 1;
     transform: scale(1.2);
 }
+
 @media (max-width: 576px) {
     .footer .container {
         flex-direction: column;

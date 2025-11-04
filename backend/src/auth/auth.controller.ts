@@ -1,9 +1,12 @@
-import {Controller,Post,Body,UsePipes,ValidationPipe,UseInterceptors,UploadedFile,HttpCode,HttpStatus} from '@nestjs/common';
+import { Controller, Post, Body, UploadedFile, UseInterceptors, HttpCode, HttpStatus, HttpException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import { AuthService } from './auth.service';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { RegisterAuthDto } from './dto/register-auth.dto';
+import { validate } from 'class-validator';
+import { plainToInstance } from 'class-transformer';
 import { LoginAuthDto } from './dto/login-auth.dto';
-import { CloudinaryService, CloudinaryUploadResult } from '../cloudinary/cloudinary.service';
 
 @Controller('auth')
 export class AuthController {
@@ -11,33 +14,83 @@ export class AuthController {
         private readonly authService: AuthService,
         private readonly cloudinaryService: CloudinaryService,
     ) {}
-    
-      // Registro de usuario
-    @Post('register')
-    @HttpCode(HttpStatus.CREATED)
-    @UsePipes(new ValidationPipe({ whitelist: true }))
-    @UseInterceptors(FileInterceptor('imagenPerfil'))
-    async register(
-        @Body() registerDto: RegisterAuthDto,
-        @UploadedFile() archivo?: Express.Multer.File,
-    ) {
-        let urlImagen: string | undefined;
-    
-        if (archivo) {
-            // Subir la imagen a Cloudinary y obtener la URL
-            const resultado: CloudinaryUploadResult = await this.cloudinaryService.uploadImage(archivo, 'usuarios');
-            urlImagen = resultado.secure_url;
-        }
-    
-        // Llamar al service pasando la URL de la imagen
-        return this.authService.register(registerDto, urlImagen);
-    }
-    
-      // Login de usuario
+
     @Post('login')
     @HttpCode(HttpStatus.OK)
-    @UsePipes(new ValidationPipe({ whitelist: true }))
-    async login(@Body() loginDto: LoginAuthDto) {
-        return this.authService.login(loginDto);
+    async login(@Body() dto: LoginAuthDto) {
+    const user = await this.authService.validateUser(dto.emailOrUsername, dto.password);
+
+    if (!user) {
+        throw new HttpException('Usuario o contraseña incorrectos', HttpStatus.UNAUTHORIZED);
+    }
+
+    const token = await this.authService.generateJwt(user);
+
+    return {
+        message: 'Login exitoso',
+        user: {
+        id: user._id,
+        nombre: user.nombre,
+        apellido: user.apellido,
+        email: user.email,
+        nombreUsuario: user.nombreUsuario,
+        perfil: user.perfil,
+        imagenPerfil: user.imagenPerfil,
+        },
+        token,
+    };
+    }
+    
+    @Post('register')
+    @HttpCode(HttpStatus.CREATED)
+    @UseInterceptors(FileInterceptor('imagenPerfil', { storage: memoryStorage() }))
+    async register(@UploadedFile() archivo?: Express.Multer.File, @Body() body?: any) {
+        // Convertimos todos los campos explícitamente a string
+        const dto = plainToInstance(RegisterAuthDto, {
+            nombre: String(body.nombre || '').trim(),
+            apellido: String(body.apellido || '').trim(),
+            email: String(body.email || '').trim(),
+            nombreUsuario: String(body.nombreUsuario || '').trim(),
+            password: String(body.password || '').trim(),
+            repeatPassword: String(body.repeatPassword || '').trim(),
+            fechaNacimiento: body.fechaNacimiento ? String(body.fechaNacimiento) : '',
+            descripcion: body.descripcion ? String(body.descripcion) : '',
+            perfil: body.perfil ? String(body.perfil) : 'usuario',
+        });
+
+        // Validación básica antes de continuar
+        if (!dto.nombreUsuario) {
+            throw new HttpException('El nombre de usuario es obligatorio', HttpStatus.BAD_REQUEST);
+        }
+        if (!dto.email) {
+            throw new HttpException('El email es obligatorio', HttpStatus.BAD_REQUEST);
+        }
+
+        // 🔍 Validamos el DTO con class-validator
+        const errors = await validate(dto);
+        if (errors.length > 0) {
+            const messages = errors.map(err => Object.values(err.constraints || {})).flat();
+            throw new HttpException(
+                { statusCode: 400, error: 'Bad Request', message: messages },
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+
+        // ☁️ Subimos la imagen si existe
+        let urlImagen: string | undefined;
+        if (archivo) {
+            urlImagen = await this.cloudinaryService.uploadImage(archivo, 'usuarios');
+        }
+
+        // 🧠 Registramos al usuario con manejo de errores
+        try {
+            return await this.authService.register(dto, urlImagen);
+        } catch (err) {
+            console.error('Error al registrar usuario:', err);
+            throw new HttpException(
+                'Error interno al registrar el usuario',
+                HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
     }
 }

@@ -1,111 +1,109 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-registro',
-  imports: [CommonModule, ReactiveFormsModule],
   standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './registro.html',
   styleUrls: ['./registro.css']
 })
 export class Registro {
-  registerForm: FormGroup;
-  selectedFile: File | null = null;
+  registerForm!: FormGroup;
+  selectedFile?: File;
+  previewImage?: string;
+  loading: boolean = false;
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {
     this.registerForm = this.fb.group({
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      username: ['', Validators.required],
-      password: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(8),
-          Validators.pattern(/^(?=.*[A-Z])(?=.*\d).{8,}$/)
-        ]
-      ],
-      confirmPassword: ['', Validators.required],
-      fechaNacimiento: ['', Validators.required],
-      descripcion: ['', Validators.required],
-      perfil: ['usuario', Validators.required]
+      nombreUsuario: ['', Validators.required],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      repeatPassword: ['', [Validators.required, Validators.minLength(6)]],
+      fechaNacimiento: [''],
+      descripcion: [''],
+      perfil: ['usuario'],
     });
   }
 
+  // ✅ Vista previa de imagen
   onFileChange(event: any) {
-    const file: File = event.target.files[0];
-    if (!file) return;
+    const file = event.target.files?.[0];
+    if (file) {
+      this.selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = () => (this.previewImage = reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  }
 
-    // Validar tipo de imagen
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/tiff'];
-    if (!allowedTypes.includes(file.type)) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Archivo no válido',
-        text: 'Solo se permiten imágenes JPG, PNG, GIF o TIFF',
-        confirmButtonColor: '#f0ad4e'
-      });
-      this.selectedFile = null;
-      event.target.value = ''; // limpiar input
+  // ✅ Enviar datos al backend
+  async onSubmit() {
+    if (this.registerForm.invalid) {
+      Swal.fire('Error', 'Por favor completá todos los campos correctamente.', 'error');
       return;
     }
 
-    this.selectedFile = file;
-  }
+    const { password, repeatPassword } = this.registerForm.value;
 
-  onSubmit() {
-    if (
-      this.registerForm.valid &&
-      this.registerForm.value.password === this.registerForm.value.confirmPassword
-    ) {
-      const formData = new FormData();
+    if (password !== repeatPassword) {
+      Swal.fire('Error', 'Las contraseñas no coinciden.', 'error');
+      return;
+    }
 
-      // Mapear campos del formulario al backend
-      Object.entries(this.registerForm.value).forEach(([key, value]) => {
-        if (key === 'username') {
-          formData.append('nombreUsuario', value as string); // backend espera nombreUsuario
-        } else if (key !== 'confirmPassword') { // no enviar confirmPassword
-          formData.append(key, value as string);
-        }
-      });
+    const formData = new FormData();
+    formData.append('nombre', this.registerForm.value.nombre || '');
+    formData.append('apellido', this.registerForm.value.apellido || '');
+    formData.append('email', this.registerForm.value.email || '');
+    formData.append('nombreUsuario', this.registerForm.value.nombreUsuario || '');
+    formData.append('password', this.registerForm.value.password || '');
+    formData.append('repeatPassword', this.registerForm.value.repeatPassword || '');
+    formData.append('fechaNacimiento', this.registerForm.value.fechaNacimiento || '');
+    formData.append('descripcion', this.registerForm.value.descripcion || '');
+    formData.append('perfil', this.registerForm.value.perfil || 'usuario');
 
-      if (this.selectedFile) {
-        formData.append('imagenPerfil', this.selectedFile);
-      }
+    if (this.selectedFile) {
+      formData.append('imagenPerfil', this.selectedFile);
+    }
 
-      this.authService.register(formData).subscribe({
-        next: () => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Registro exitoso 🎉',
-            text: 'Tu cuenta fue creada correctamente',
-            confirmButtonColor: '#3085d6'
-          }).then(() => {
-            this.router.navigate(['/login']);
-          });
-        },
-        error: (err: any) => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error al registrar',
-            text: err.error?.message || 'Ocurrió un problema, intenta nuevamente',
-            confirmButtonColor: '#d33'
-          });
-        }
-      });
-    } else {
+    try {
+      this.loading = true; // ⬅️ Activar spinner
+
+      const res = await lastValueFrom(this.authService.register(formData));
+      console.log('✅ Registro exitoso:', res);
+
       Swal.fire({
-        icon: 'warning',
-        title: 'Formulario incompleto',
-        text: 'Las contraseñas no coinciden o hay campos vacíos',
-        confirmButtonColor: '#f0ad4e'
+        icon: 'success',
+        title: 'Registro completado',
+        text: 'Tu cuenta fue creada correctamente.',
+        confirmButtonText: 'Ir al login',
+      }).then(() => this.router.navigate(['/login']));
+    } catch (error: any) {
+      console.error('❌ Error en el registro:', error);
+
+      const backendMessage =
+        error?.error?.message || error?.message || 'Ocurrió un error durante el registro.';
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al registrar',
+        text: Array.isArray(backendMessage)
+          ? backendMessage.join('\n')
+          : backendMessage,
       });
+    } finally {
+      this.loading = false; // ⬅️ Desactivar spinner
     }
   }
 }

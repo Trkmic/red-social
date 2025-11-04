@@ -11,8 +11,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         imports: [ConfigModule],
         useFactory: async (configService: ConfigService) => ({
             uri: configService.get<string>(
-            'MONGO_URI',
-            'mongodb://localhost:27017/restaurante_2025'
+            'MONGO_URI', 'mongodb://localhost:27017/redsocial'
             ),
         }),
         inject: [ConfigService],

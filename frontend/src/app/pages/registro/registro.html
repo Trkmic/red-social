@@ -1,74 +1,112 @@
-<div class="container d-flex justify-content-center my-5">
-  <div class="registro-container card p-4 shadow-sm border-0 w-100">
+<div class="app-background">
+  <div class="container">
+    <div class="container d-flex justify-content-center align-items-center my-0">
+      <div class="registro-container card p-4 shadow border-0 w-100" style="max-width: 650px;">
+        
+        <h1 class="text-center text-primary fw-bold mb-4">Registro</h1>
 
-    <h1 class="text-center text-primary fw-bold mb-4">Registro</h1>
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data" novalidate>
 
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data">
+          <div class="row g-3">
+            
+            <!-- NOMBRE -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Nombre</label>
+              <input type="text" class="form-control" formControlName="nombre" placeholder="Nombre" appAutofocus appResaltarInvalido>
+            </div>
 
-      <div class="row g-3">
+            <!-- APELLIDO -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Apellido</label>
+              <input type="text" class="form-control" formControlName="apellido" placeholder="Apellido" appResaltarInvalido>
+            </div>
 
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">Nombre</label>
-          <input type="text" class="form-control" formControlName="nombre" placeholder="Nombre" appAutofocus appResaltarInvalido>
-        </div>
+            <!-- EMAIL -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Email</label>
+              <input type="email" class="form-control" formControlName="email" placeholder="Correo electrónico" appResaltarInvalido>
+            </div>
 
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">Apellido</label>
-          <input type="text" class="form-control" formControlName="apellido" placeholder="Apellido" appResaltarInvalido>
-        </div>
+            <!-- USUARIO -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Usuario</label>
+              <input type="text" class="form-control" formControlName="nombreUsuario" placeholder="Nombre de usuario" appResaltarInvalido>
+            </div>
 
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">Email</label>
-          <input type="email" class="form-control" formControlName="email" placeholder="Email" appResaltarInvalido>
-        </div>
+            <!-- CONTRASEÑA -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Contraseña</label>
+              <input type="password" class="form-control" formControlName="password" placeholder="Contraseña" appResaltarInvalido>
+              <div class="text-danger small mt-1"
+                  *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid">
+                La contraseña debe tener al menos 6 caracteres.
+              </div>
+            </div>
 
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">Usuario</label>
-          <input type="text" class="form-control" formControlName="username" placeholder="Nombre de usuario" appResaltarInvalido>
-        </div>
+            <!-- REPETIR CONTRASEÑA -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Repetir Contraseña</label>
+              <input type="password" class="form-control" formControlName="repeatPassword" placeholder="Confirmar contraseña" appResaltarInvalido>
+            </div>
 
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">Contraseña</label>
-          <input type="password" class="form-control" formControlName="password" placeholder="Contraseña" appResaltarInvalido>
-          <div class="text-danger small mt-1"
-               *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid">
-            La contraseña debe tener al menos 8 caracteres, una mayúscula y un número.
+            <!-- FECHA DE NACIMIENTO -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Fecha de Nacimiento</label>
+              <input type="date" class="form-control" formControlName="fechaNacimiento" appResaltarInvalido>
+            </div>
+
+            <!-- PERFIL -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Perfil</label>
+              <select class="form-select" formControlName="perfil">
+                <option value="usuario">Usuario</option>
+                <option value="administrador">Administrador</option>
+              </select>
+            </div>
+
+            <!-- DESCRIPCIÓN -->
+            <div class="col-12">
+              <label class="form-label fw-semibold">Descripción</label>
+              <textarea class="form-control" formControlName="descripcion" placeholder="Breve descripción personal" rows="3"></textarea>
+            </div>
+
+            <!-- FOTO DE PERFIL -->
+            <div class="col-12">
+              <label class="form-label fw-semibold">Foto de Perfil</label>
+              <input type="file" class="form-control" accept="image/png, image/jpeg, image/jpg, image/webp" (change)="onFileChange($event)">
+              <small class="text-muted">Formatos permitidos: JPG, PNG, WEBP</small>
+
+              <div *ngIf="previewImage" class="mt-3 text-center">
+                <img [src]="previewImage"
+                    alt="Vista previa"
+                    class="rounded-circle shadow-sm border"
+                    width="120"
+                    height="120"
+                    style="object-fit: cover;">
+              </div>
+            </div>
+
           </div>
-        </div>
 
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">Confirmar Contraseña</label>
-          <input type="password" class="form-control" formControlName="confirmPassword" placeholder="Confirmar Contraseña" appResaltarInvalido>
-        </div>
+          <!-- BOTÓN REGISTRAR -->
+          
+          <!-- BOTÓN REGISTRAR -->
+          <button type="submit"
+                  class="btn btn-primary w-100 fw-bold mt-4 d-flex justify-content-center align-items-center"
+                  [disabled]="loading || registerForm.invalid">
 
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">Fecha de Nacimiento</label>
-          <input type="date" class="form-control" formControlName="fechaNacimiento" appResaltarInvalido>
-        </div>
+            <span *ngIf="!loading">Registrarse</span>
+            
+            <span *ngIf="loading" class="d-flex align-items-center gap-2">
+              <div class="spinner-border spinner-border-sm text-light" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              Registrando...
+            </span>
+          </button>
 
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">Perfil</label>
-          <select class="form-select" formControlName="perfil">
-            <option value="usuario">Usuario</option>
-            <option value="administrador">Administrador</option>
-          </select>
-        </div>
-
-        <div class="col-12">
-          <label class="form-label fw-semibold">Descripción</label>
-          <textarea class="form-control" formControlName="descripcion" placeholder="Descripción breve" rows="3"></textarea>
-        </div>
-
-        <div class="col-12">
-          <label class="form-label fw-semibold">Foto de Perfil</label>
-          <input type="file" class="form-control" (change)="onFileChange($event)">
-          <small class="text-muted">Solo se permiten JPG, PNG, GIF o TIFF</small>
-        </div>
-
+        </form>
       </div>
-
-      <button type="submit" class="btn w-100 text-white fw-bold mt-4 register-btn"
-              [disabled]="registerForm.invalid">Registrarse</button>
-    </form>
-  </div>
+    </div>
+  </div>    
 </div>

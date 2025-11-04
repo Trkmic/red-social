@@ -33,19 +33,19 @@ export class Login implements OnInit {
   onSubmit() {
     if (this.loginForm.valid) {
       this.loading = true;
-      this.loginForm.disable(); // Bloquea el formulario mientras carga
-
+      this.loginForm.disable();
+  
       this.auth.login(this.loginForm.value).subscribe({
         next: (res) => {
           setTimeout(() => {
             this.loading = false;
-            this.loginForm.enable(); // Vuelve a habilitar el formulario
+            this.loginForm.enable();
             this.router.navigate(['/publicaciones']);
-          }, 1000);
+          }, 500);
         },
         error: (err) => {
           this.loading = false;
-          this.loginForm.enable(); // Siempre habilitar de nuevo
+          this.loginForm.enable();
           Swal.fire({
             icon: 'error',
             title: 'Error de login',

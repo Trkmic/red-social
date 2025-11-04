@@ -1,47 +1,27 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength, Validate, IsDateString, IsOptional } from 'class-validator';
-import { ValidadorEmail } from '../validaciones/valida-email';
-import { DecoradorValidoEmail } from '../validaciones/decorador-valido-email';
+import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 
 export class RegisterAuthDto {
-    @IsNotEmpty() 
-    @IsString() 
+    @IsNotEmpty({ message: 'El nombre es obligatorio' })
     nombre: string;
-    
-    @IsNotEmpty() 
-    @IsString() 
+
+    @IsNotEmpty({ message: 'El apellido es obligatorio' })
     apellido: string;
 
-    @IsEmail() 
-    @IsNotEmpty()
-    @Validate(ValidadorEmail)
-    @DecoradorValidoEmail()
+    @IsEmail({}, { message: 'El correo electrónico no es válido' })
     email: string;
 
-    @IsNotEmpty() 
-    @IsString() 
+    @IsNotEmpty({ message: 'El nombre de usuario es obligatorio' })
     nombreUsuario: string;
-    
-    @IsString() 
-    @MinLength(6) 
-    contraseña: string;
-    
-    @IsString() 
-    @IsNotEmpty() 
-    repetirContraseña: string;
 
-    @IsNotEmpty() 
-    @IsDateString() 
-    fechaNacimiento: string;
-    
-    @IsNotEmpty() 
-    @IsString() 
-    descripcion: string;
+    @IsNotEmpty({ message: 'La contraseña es obligatoria' })
+    @MinLength(6, { message: 'La contraseña debe tener al menos 6 caracteres' })
+    password: string;
 
-    @IsOptional() 
-    @IsString() 
-    perfil?: 'usuario' | 'administrador' = 'usuario';
-    
-    @IsOptional() 
-    @IsString() 
-    imagenPerfil?: string; // URL de la imagen subida
+    @IsNotEmpty({ message: 'Debes repetir la contraseña' })
+    @MinLength(6, { message: 'La contraseña debe tener al menos 6 caracteres' })
+    repeatPassword: string;
+
+    fechaNacimiento?: string;
+    descripcion?: string;
+    perfil?: string;
 }
