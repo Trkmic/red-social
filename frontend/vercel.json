@@ -2,16 +2,13 @@
     "version": 2,
     "builds": [
       {
-        "src": "frontend/angular.json",
+        "src": "package.json",
         "use": "@vercel/static-build",
         "config": {
-          "distDir": "frontend/dist/red-social/browser"
+          "distDir": "dist/red-social/browser"
         }
       }
     ],
-    "framework": "angular",
-    "buildCommand": "cd frontend && npm install && npm run build",
-    "outputDirectory": "frontend/dist/red-social/browser",
     "rewrites": [
       { "source": "/(.*)", "destination": "/index.html" }
     ]
