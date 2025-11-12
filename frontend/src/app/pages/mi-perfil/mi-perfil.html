@@ -1,11 +1,6 @@
 <div class="container my-5">
   <div class="perfil-container card mx-auto text-center p-4 shadow-sm border-0">
 
-    <!-- Imagen de perfil -->
-    <img [src]="usuario?.imagenPerfil?.trim() || '/icons/14.png'"
-         alt="perfil" 
-         class="perfil-img mx-auto mb-3 shadow-sm">
-
     <hr class="my-4">
 
     <!-- Últimas publicaciones -->
@@ -17,9 +12,9 @@
         <!-- Usuario de la publicación -->
         <div class="d-flex align-items-center gap-3 mb-2">
           <img [src]="pub.usuarioId.imagenPerfil || '/icons/14.png'" 
-               alt="Usuario" 
-               class="rounded-circle" 
-               width="40" height="40">
+                alt="Usuario" 
+                class="rounded-circle" 
+                width="40" height="40">
           <strong>{{ pub.usuarioId.nombreUsuario || 'Usuario desconocido' }}</strong>
         </div>
 
@@ -28,9 +23,9 @@
 
         <!-- Imagen si tiene -->
         <img *ngIf="pub.imagen" 
-             [src]="'http://localhost:3000' + pub.imagen" 
-             alt="imagen publicación" 
-             class="img-fluid rounded shadow-sm mb-2">
+              [src]="'http://localhost:3000' + pub.imagen" 
+              alt="imagen publicación" 
+              class="img-fluid rounded shadow-sm mb-2">
 
         <!-- Comentarios -->
         <div *ngIf="pub.comentarios?.length" class="comentarios mt-2">
