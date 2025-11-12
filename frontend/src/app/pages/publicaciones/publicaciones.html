@@ -43,7 +43,7 @@
         <!-- Imagen -->
         <img
         *ngIf="post.imagen"
-        [src]="'http://localhost:3000' + post.imagen"
+        [src]="post.imagen.startsWith('http') ? post.imagen : 'http://localhost:3000' + post.imagen"
         alt="Foto de publicación"
         class="post-img mb-2 rounded"
       />
