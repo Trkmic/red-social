@@ -8,40 +8,70 @@ export interface Publicacion {
     _id: string;
     titulo: string;
     mensaje: string;
-    imagen?: string;
-    usuarioId: { _id: string, username: string };
+    imagen?: string | null;
+    usuarioId: { _id: string; username: string };
     likes: string[];
     createdAt: string;
+    comentarios?: { texto: string; usuario: string }[];
 }
 
 @Injectable({
     providedIn: 'root'
 })
 export class PublicacionesService {
-    private baseUrl = environment.apiUrl;
+    private baseUrl = `${environment.apiUrl}/publicaciones`;
 
     constructor(private http: HttpClient, private authService: AuthService) {}
 
-    obtenerPublicaciones(): Observable<Publicacion[]> {
-        return this.http.get<Publicacion[]>(this.baseUrl);
+    obtenerPublicaciones(
+        orden: 'fecha' | 'likes' = 'fecha',
+        offset = 0,
+        limit = 10
+    ): Observable<Publicacion[]> {
+        return this.http.get<Publicacion[]>(
+        `${this.baseUrl}?orden=${orden}&offset=${offset}&limit=${limit}`
+        );
+    }
+
+    getPublicacionesUsuario(userId: string, limit: number = 3): Observable<Publicacion[]> {
+        return this.http.get<Publicacion[]>(
+        `${this.baseUrl}?usuario=${userId}&limit=${limit}&orden=fecha`
+        );
+    }
+
+    getUsuario(id: string): Observable<any> {
+        return this.http.get<any>(`${environment.apiUrl}/usuarios/${id}`);
     }
 
     crearPublicacion(data: FormData): Observable<Publicacion> {
         const user = this.authService.getUsuarioLogueado();
         if (!user) return throwError(() => new Error('Usuario no logueado'));
-        data.append('usuarioId', user._id);
+
+        const userId = user._id || user.id; 
+        data.append('usuarioId', userId);
+
+        console.log('📤 Creando publicación con usuarioId:', userId);
+
         return this.http.post<Publicacion>(this.baseUrl, data);
     }
 
     darLike(id: string): Observable<Publicacion> {
         const user = this.authService.getUsuarioLogueado();
-        if (!user) return throwError(() => new Error('Usuario no logueado'));
+        if (!user?._id) return throwError(() => new Error('Usuario no logueado'));
         return this.http.post<Publicacion>(`${this.baseUrl}/${id}/like`, { userId: user._id });
     }
 
     quitarLike(id: string): Observable<Publicacion> {
         const user = this.authService.getUsuarioLogueado();
+        if (!user?._id) return throwError(() => new Error('Usuario no logueado'));
+        return this.http.delete<Publicacion>(`${this.baseUrl}/${id}/like?userId=${user._id}`);
+    }
+
+    eliminarPublicacion(id: string): Observable<any> {
+        const user = this.authService.getUsuarioLogueado();
         if (!user) return throwError(() => new Error('Usuario no logueado'));
-        return this.http.request<Publicacion>('delete', `${this.baseUrl}/${id}/like`, { body: { userId: user._id } });
+
+        const userId = user._id || user.id;
+        return this.http.delete(`${this.baseUrl}/${id}?userId=${userId}`);
     }
 }

@@ -4,7 +4,7 @@ import { Directive, HostListener, Input } from '@angular/core';
     selector: '[appClickControl]'
 })
 export class ClickControlDirective {
-    @Input() debounceTime = 500; // tiempo por defecto en ms
+    @Input() debounceTime = 500;
     private isClicked = false;
 
     @HostListener('click', ['$event'])

@@ -27,25 +27,25 @@ export class AuthController {
     const token = await this.authService.generateJwt(user);
 
     return {
-        message: 'Login exitoso',
-        user: {
-        id: user._id,
-        nombre: user.nombre,
-        apellido: user.apellido,
-        email: user.email,
-        nombreUsuario: user.nombreUsuario,
-        perfil: user.perfil,
-        imagenPerfil: user.imagenPerfil,
-        },
-        token,
-    };
+            message: 'Login exitoso',
+            user: {
+            id: user._id,
+            nombre: user.nombre,
+            apellido: user.apellido,
+            email: user.email,
+            nombreUsuario: user.nombreUsuario,
+            perfil: user.perfil,
+            imagenPerfil: user.imagenPerfil,
+            },
+            token,
+        };
     }
     
     @Post('register')
     @HttpCode(HttpStatus.CREATED)
     @UseInterceptors(FileInterceptor('imagenPerfil', { storage: memoryStorage() }))
     async register(@UploadedFile() archivo?: Express.Multer.File, @Body() body?: any) {
-        // Convertimos todos los campos explícitamente a string
+        
         const dto = plainToInstance(RegisterAuthDto, {
             nombre: String(body.nombre || '').trim(),
             apellido: String(body.apellido || '').trim(),
@@ -58,7 +58,6 @@ export class AuthController {
             perfil: body.perfil ? String(body.perfil) : 'usuario',
         });
 
-        // Validación básica antes de continuar
         if (!dto.nombreUsuario) {
             throw new HttpException('El nombre de usuario es obligatorio', HttpStatus.BAD_REQUEST);
         }
@@ -66,7 +65,6 @@ export class AuthController {
             throw new HttpException('El email es obligatorio', HttpStatus.BAD_REQUEST);
         }
 
-        // 🔍 Validamos el DTO con class-validator
         const errors = await validate(dto);
         if (errors.length > 0) {
             const messages = errors.map(err => Object.values(err.constraints || {})).flat();
@@ -76,17 +74,14 @@ export class AuthController {
             );
         }
 
-        // ☁️ Subimos la imagen si existe
         let urlImagen: string | undefined;
         if (archivo) {
             urlImagen = await this.cloudinaryService.uploadImage(archivo, 'usuarios');
         }
 
-        // 🧠 Registramos al usuario con manejo de errores
         try {
             return await this.authService.register(dto, urlImagen);
         } catch (err) {
-            console.error('Error al registrar usuario:', err);
             throw new HttpException(
                 'Error interno al registrar el usuario',
                 HttpStatus.INTERNAL_SERVER_ERROR,

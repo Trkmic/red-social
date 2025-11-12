@@ -90,8 +90,6 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    max-height: 70vh;
-    overflow-y: auto;
     padding-right: 0.25rem;
 }
 
@@ -129,23 +127,8 @@
     object-fit: cover;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
-
-/* Acciones */
-.actions .btn-primary {
-    background: #0d6efd;
-    border: none;
-}
-
-.actions .btn-outline-primary {
-    border-color: #0d6efd;
-    color: #0d6efd;
-}
-
 .actions .btn-outline-secondary {
     color: #fff;
     border-color: #fff;
 }
 
-.actions .btn-outline-secondary:hover {
-    background: rgba(255,255,255,0.1);
-}

@@ -12,53 +12,118 @@
             <!-- NOMBRE -->
             <div class="col-md-6">
               <label class="form-label fw-semibold">Nombre</label>
-              <input type="text" class="form-control" formControlName="nombre" placeholder="Nombre" appAutofocus appResaltarInvalido>
+              <input type="text"
+                    class="form-control"
+                    formControlName="nombre"
+                    placeholder="Nombre"
+                    appAutofocus
+                    appResaltarInvalido>
+              <div class="text-danger small mt-1"
+                   *ngIf="registerForm.get('nombre')?.touched && registerForm.get('nombre')?.hasError('required')">
+                El nombre es obligatorio.
+              </div>
             </div>
 
             <!-- APELLIDO -->
             <div class="col-md-6">
               <label class="form-label fw-semibold">Apellido</label>
-              <input type="text" class="form-control" formControlName="apellido" placeholder="Apellido" appResaltarInvalido>
+              <input type="text"
+                    class="form-control"
+                    formControlName="apellido"
+                    placeholder="Apellido"
+                    appResaltarInvalido>
+              <div class="text-danger small mt-1"
+                   *ngIf="registerForm.get('apellido')?.touched && registerForm.get('apellido')?.hasError('required')">
+                El apellido es obligatorio.
+              </div>
             </div>
 
             <!-- EMAIL -->
             <div class="col-md-6">
               <label class="form-label fw-semibold">Email</label>
-              <input type="email" class="form-control" formControlName="email" placeholder="Correo electrónico" appResaltarInvalido>
+              <input type="email"
+                    class="form-control"
+                    formControlName="email"
+                    placeholder="Correo electrónico"
+                    appResaltarInvalido>
+              <div class="text-danger small mt-1"
+                   *ngIf="registerForm.get('email')?.touched">
+                <div *ngIf="registerForm.get('email')?.hasError('required')">
+                  El email es obligatorio.
+                </div>
+                <div *ngIf="registerForm.get('email')?.hasError('email')">
+                  El formato del email no es válido.
+                </div>
+              </div>
             </div>
 
             <!-- USUARIO -->
             <div class="col-md-6">
               <label class="form-label fw-semibold">Usuario</label>
-              <input type="text" class="form-control" formControlName="nombreUsuario" placeholder="Nombre de usuario" appResaltarInvalido>
+              <input type="text"
+                    class="form-control"
+                    formControlName="nombreUsuario"
+                    placeholder="Nombre de usuario"
+                    appResaltarInvalido>
+              <div class="text-danger small mt-1"
+                   *ngIf="registerForm.get('nombreUsuario')?.touched && registerForm.get('nombreUsuario')?.hasError('required')">
+                El nombre de usuario es obligatorio.
+              </div>
             </div>
 
             <!-- CONTRASEÑA -->
             <div class="col-md-6">
               <label class="form-label fw-semibold">Contraseña</label>
-              <input type="password" class="form-control" formControlName="password" placeholder="Contraseña" appResaltarInvalido>
+              <input type="password"
+                    class="form-control"
+                    formControlName="password"
+                    placeholder="Contraseña"
+                    appResaltarInvalido>
               <div class="text-danger small mt-1"
-                  *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid">
-                La contraseña debe tener al menos 6 caracteres.
+                   *ngIf="registerForm.get('password')?.touched">
+                <div *ngIf="registerForm.get('password')?.hasError('required')">
+                  La contraseña es obligatoria.
+                </div>
+                <div *ngIf="registerForm.get('password')?.hasError('minlength')">
+                  La contraseña debe tener al menos 6 caracteres.
+                </div>
               </div>
             </div>
 
             <!-- REPETIR CONTRASEÑA -->
             <div class="col-md-6">
               <label class="form-label fw-semibold">Repetir Contraseña</label>
-              <input type="password" class="form-control" formControlName="repeatPassword" placeholder="Confirmar contraseña" appResaltarInvalido>
+              <input type="password"
+                    class="form-control"
+                    formControlName="repeatPassword"
+                    placeholder="Confirmar contraseña"
+                    appResaltarInvalido>
+              <div class="text-danger small mt-1"
+                   *ngIf="registerForm.get('repeatPassword')?.touched">
+                <div *ngIf="registerForm.get('repeatPassword')?.hasError('required')">
+                  Debes confirmar la contraseña.
+                </div>
+                <div *ngIf="registerForm.value.password !== registerForm.value.repeatPassword && registerForm.get('repeatPassword')?.touched">
+                  Las contraseñas no coinciden.
+                </div>
+              </div>
             </div>
 
             <!-- FECHA DE NACIMIENTO -->
             <div class="col-md-6">
               <label class="form-label fw-semibold">Fecha de Nacimiento</label>
-              <input type="date" class="form-control" formControlName="fechaNacimiento" appResaltarInvalido>
+              <input type="date"
+                     class="form-control"
+                     formControlName="fechaNacimiento"
+                     appResaltarInvalido>
             </div>
 
             <!-- PERFIL -->
             <div class="col-md-6">
               <label class="form-label fw-semibold">Perfil</label>
-              <select class="form-select" formControlName="perfil">
+              <select class="form-select"
+                      formControlName="perfil"
+                      appResaltarInvalido>
                 <option value="usuario">Usuario</option>
                 <option value="administrador">Administrador</option>
               </select>
@@ -67,13 +132,20 @@
             <!-- DESCRIPCIÓN -->
             <div class="col-12">
               <label class="form-label fw-semibold">Descripción</label>
-              <textarea class="form-control" formControlName="descripcion" placeholder="Breve descripción personal" rows="3"></textarea>
+              <textarea class="form-control"
+                        formControlName="descripcion"
+                        placeholder="Breve descripción personal"
+                        rows="3"
+                        appResaltarInvalido></textarea>
             </div>
 
             <!-- FOTO DE PERFIL -->
             <div class="col-12">
               <label class="form-label fw-semibold">Foto de Perfil</label>
-              <input type="file" class="form-control" accept="image/png, image/jpeg, image/jpg, image/webp" (change)="onFileChange($event)">
+              <input type="file"
+                    class="form-control"
+                    accept="image/png, image/jpeg, image/jpg, image/webp"
+                    (change)="onFileChange($event)">
               <small class="text-muted">Formatos permitidos: JPG, PNG, WEBP</small>
 
               <div *ngIf="previewImage" class="mt-3 text-center">
@@ -89,11 +161,10 @@
           </div>
 
           <!-- BOTÓN REGISTRAR -->
-          
-          <!-- BOTÓN REGISTRAR -->
           <button type="submit"
                   class="btn btn-primary w-100 fw-bold mt-4 d-flex justify-content-center align-items-center"
-                  [disabled]="loading || registerForm.invalid">
+                  [disabled]="loading || registerForm.invalid"
+                  appClickControl>
 
             <span *ngIf="!loading">Registrarse</span>
             

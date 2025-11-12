@@ -21,7 +21,7 @@ export class CloudinaryService {
             { folder },
             (error?: any, result?: UploadApiResponse) => {
                 if (error) return reject(error);
-                if (!result) return reject(new Error('No se obtuvo resultado de Cloudinary'));
+                if (!result) return reject(new Error('Sin resultados de Cloudinary'));
                 resolve(result);
             }
             );

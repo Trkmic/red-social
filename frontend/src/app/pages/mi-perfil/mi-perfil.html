@@ -1,19 +1,54 @@
 <div class="container my-5">
-    <div class="perfil-container card mx-auto text-center p-4 shadow-sm border-0">
+  <div class="perfil-container card mx-auto text-center p-4 shadow-sm border-0">
 
-        <img src="https://i.pravatar.cc/120" alt="perfil" class="perfil-img mx-auto mb-3 shadow-sm">
-        <h2 class="fw-semibold">Pedro</h2>
-        <p class="text-muted mb-4">Desarrollador de software en formación. Amante del código y los desafíos 👨‍💻</p>
-    
-        <hr class="my-4">
-    
-        <h3 class="fw-semibold mb-3">Mis últimas publicaciones</h3>
-        
-        <div *ngFor="let i of [1,2,3]" class="mini-post text-start">
-            <p class="mb-0">
-            <strong>Post {{ i }}</strong> — "Esto es una publicación de ejemplo."
-            </p>
+    <!-- Imagen de perfil -->
+    <img [src]="usuario?.imagenPerfil?.trim() || '/icons/14.png'"
+         alt="perfil" 
+         class="perfil-img mx-auto mb-3 shadow-sm">
+
+    <hr class="my-4">
+
+    <!-- Últimas publicaciones -->
+    <h3 class="fw-semibold mb-3">Mis últimas publicaciones</h3>
+
+    <div *ngIf="publicaciones.length > 0; else sinPublicaciones">
+      <div *ngFor="let pub of publicaciones" class="mini-post text-start mb-5">
+
+        <!-- Usuario de la publicación -->
+        <div class="d-flex align-items-center gap-3 mb-2">
+          <img [src]="pub.usuarioId.imagenPerfil || '/icons/14.png'" 
+               alt="Usuario" 
+               class="rounded-circle" 
+               width="40" height="40">
+          <strong>{{ pub.usuarioId.nombreUsuario || 'Usuario desconocido' }}</strong>
         </div>
-    
+
+        <!-- Mensaje -->
+        <p class="text-muted mb-2">{{ pub.mensaje }}</p>
+
+        <!-- Imagen si tiene -->
+        <img *ngIf="pub.imagen" 
+             [src]="'http://localhost:3000' + pub.imagen" 
+             alt="imagen publicación" 
+             class="img-fluid rounded shadow-sm mb-2">
+
+        <!-- Comentarios -->
+        <div *ngIf="pub.comentarios?.length" class="comentarios mt-2">
+          <h6 class="fw-semibold small text-muted mb-1">Comentarios:</h6>
+          <p *ngFor="let c of pub.comentarios" class="text-muted small mb-1">
+            💬 {{ c.texto }}
+          </p>
+        </div>
+
+        <hr>
+      </div>
     </div>
+
+    <ng-template #sinPublicaciones>
+      <p class="text-muted fst-italic">Aún no realizaste publicaciones.</p>
+    </ng-template>
+
+  </div>
 </div>
+
+

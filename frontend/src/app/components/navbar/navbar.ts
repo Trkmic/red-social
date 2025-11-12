@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { Router , NavigationEnd} from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../core/services/auth.service'; // ← importa tu servicio
 
 @Component({
   selector: 'app-navbar',
@@ -13,18 +14,17 @@ export class Navbar {
   showMiPerfil = false;
   showSalir = false;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private auth: AuthService) { 
+
     // Escuchar cambios de ruta
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         const url = event.urlAfterRedirects || event.url;
 
-        // Resetear botones
         this.showPublicaciones = false;
         this.showMiPerfil = false;
         this.showSalir = false;
 
-        // Mostrar botones según página
         if (url.includes('/publicaciones')) {
           this.showMiPerfil = true;
           this.showSalir = true;
@@ -32,7 +32,6 @@ export class Navbar {
           this.showPublicaciones = true;
           this.showSalir = true;
         }
-        // login y registro quedan sin botones
       }
     });
   }
@@ -42,6 +41,7 @@ export class Navbar {
   }
 
   logout() {
+    this.auth.logout();
     this.router.navigate(['/login']);
   }
 }

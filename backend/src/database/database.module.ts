@@ -5,7 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 @Module({
     imports: [
         ConfigModule.forRoot({
-        isGlobal: true, // permite usar las variables .env en toda la app
+        isGlobal: true,
         }),
         MongooseModule.forRootAsync({
         imports: [ConfigModule],

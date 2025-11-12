@@ -1,33 +1,32 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
+import { join } from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
   dotenv.config();
 
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // ✅ Configuración robusta de CORS
   app.enableCors({
     origin: [
-      'http://localhost:4200', // desarrollo local
-      'https://red-social-sage.vercel.app', // dominio de producción en Vercel
-      'https://red-social-gxjeq06pf-ignacios-projects-d7c4c7c5.vercel.app', // build temporal Vercel
+      'http://localhost:4200',
+      'https://red-social-sage.vercel.app',
+      'https://red-social-gxjeq06pf-ignacios-projects-d7c4c7c5.vercel.app',
     ],
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'], // 🔹 importante para JWT o formularios
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
+  });
+
+  // ✅ Hacer pública la carpeta de imágenes
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: '/uploads/',
   });
 
   const port = process.env.PORT || 3000;
-  await app.listen(port, '0.0.0.0'); // 🔹 necesario para Render
-  console.log(`✅ Servidor corriendo en puerto ${port}`);
-  console.log(`🌐 CORS habilitado para:`);
-  console.log(`   - http://localhost:4200`);
-  console.log(`   - https://red-social-sage.vercel.app`);
-  console.log(`   - https://red-social-gxjeq06pf-ignacios-projects-d7c4c7c5.vercel.app`);
+  await app.listen(port, '0.0.0.0');
 }
 
 bootstrap();

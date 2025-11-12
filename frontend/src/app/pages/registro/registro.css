@@ -1,6 +1,5 @@
-/* Card tipo registro */
 .registro-container {
-  background: rgba(255, 255, 255, 0.85); /* semitransparente para que se vea el fondo */
+  background: rgba(255, 255, 255, 0.85); /* semitransparente  fondo */
   max-width: 650px;
   border-radius: 20px;
   padding: 2rem;
@@ -15,7 +14,6 @@
   box-shadow: 0 14px 50px rgba(0, 0, 0, 0.2);
 }
 
-/* Títulos */
 .registro-container h1 {
   color: #0077ff;
   font-weight: 700;
@@ -23,7 +21,6 @@
   margin-bottom: 1.5rem;
 }
 
-/* Inputs y select */
 .registro-container .form-control,
 .registro-container .form-select,
 .registro-container textarea {
@@ -41,7 +38,6 @@
   outline: none;
 }
 
-/* Botón */
 .registro-container button[type="submit"] {
   background: linear-gradient(135deg, #0077ff, #005ad4);
   color: #fff;
@@ -66,7 +62,6 @@
   cursor: not-allowed;
 }
 
-/* Inputs file */
 input[type="file"] {
   padding: 0.4rem 0.75rem;
 }
@@ -85,7 +80,6 @@ input[type="file"]::-webkit-file-upload-button:hover {
   background: #005ad4;
 }
 
-/* Imagen de preview */
 .registro-container img {
   border-radius: 50%;
   width: 120px;

@@ -5,11 +5,14 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import Swal from 'sweetalert2';
 import { lastValueFrom } from 'rxjs';
+import { AutofocusDirective } from '../../core/directivas/autofocus.directive';
+import { ClickControlDirective  } from '../../core/directivas/clickControl.directive';
+import { ResaltarInvalidoDirective  } from '../../core/directivas/resaltarInvalido.directive';
 
 @Component({
   selector: 'app-registro',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ResaltarInvalidoDirective, ClickControlDirective, AutofocusDirective],
   templateUrl: './registro.html',
   styleUrls: ['./registro.css']
 })
@@ -37,7 +40,6 @@ export class Registro {
     });
   }
 
-  // ✅ Vista previa de imagen
   onFileChange(event: any) {
     const file = event.target.files?.[0];
     if (file) {
@@ -48,9 +50,9 @@ export class Registro {
     }
   }
 
-  // ✅ Enviar datos al backend
   async onSubmit() {
     if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
       Swal.fire('Error', 'Por favor completá todos los campos correctamente.', 'error');
       return;
     }
@@ -78,10 +80,9 @@ export class Registro {
     }
 
     try {
-      this.loading = true; // ⬅️ Activar spinner
+      this.loading = true; 
 
       const res = await lastValueFrom(this.authService.register(formData));
-      console.log('✅ Registro exitoso:', res);
 
       Swal.fire({
         icon: 'success',
@@ -90,7 +91,6 @@ export class Registro {
         confirmButtonText: 'Ir al login',
       }).then(() => this.router.navigate(['/login']));
     } catch (error: any) {
-      console.error('❌ Error en el registro:', error);
 
       const backendMessage =
         error?.error?.message || error?.message || 'Ocurrió un error durante el registro.';
@@ -103,7 +103,7 @@ export class Registro {
           : backendMessage,
       });
     } finally {
-      this.loading = false; // ⬅️ Desactivar spinner
+      this.loading = false; 
     }
   }
 }

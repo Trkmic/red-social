@@ -1,53 +1,81 @@
 <div class="feed-background">
+  <div class="feed-container">
+    <h2 class="feed-title mb-4 text-center"> Postea</h2>
 
-    <div class="feed-container">
-  
-      <h2 class="feed-title mb-4 text-center">Publicaciones</h2>
-  
-      <!-- Formulario nueva publicación -->
-      <form [formGroup]="formPublicacion" (ngSubmit)="crearPublicacion()" class="new-post-form mb-4">
-        <input formControlName="titulo" type="text" class="form-control" placeholder="Título" appResaltarInvalido>
-        <textarea formControlName="mensaje" class="form-control" placeholder="Mensaje"></textarea>
-        <input type="file" (change)="onFileChange($event)" class="form-control" appResaltarInvalido>
-        <button type="submit" class="btn post-btn" [attr.disabled]="loading ? true : null" appClickControl>
-          {{ loading ? 'Publicando...' : 'Publicar' }}
-        </button>
-      </form>
-  
-      <!-- Lista de publicaciones -->
-      <div class="posts-feed">
-        <div class="post-card" *ngFor="let post of publicaciones">
-  
-          <!-- Usuario -->
-          <div class="post-header d-flex align-items-center gap-3 mb-2">
-            <img src="https://i.pravatar.cc/50?u={{post.usuarioId._id}}" 
-                 alt="Foto de {{ post.usuarioId.username }}" class="rounded-circle">
-            <div>
-              <strong>{{ post.usuarioId.username | MayusculaLetra }}</strong>
-              <p class="time mb-0 small">{{ post.createdAt | FormateoHora }}</p>
-            </div>
+    <form [formGroup]="formPublicacion" (ngSubmit)="crearPublicacion()" class="new-post-form mb-4">
+      <input formControlName="titulo" type="text" class="form-control" placeholder="Título" appResaltarInvalido>
+      <textarea formControlName="mensaje" class="form-control" placeholder="Mensaje"></textarea>
+      <input type="file" (change)="onFileChange($event)" class="form-control" appResaltarInvalido>
+      <button type="submit" class="btn post-btn" [disabled]="loading" appClickControl>
+        {{ loading ? 'Publicando...' : 'Publicar' }}
+      </button>
+    </form>
+
+
+    <h2 class="feed-title mb-4 text-center">Publicaciones</h2>
+    
+    <div class="posts-feed" *ngIf="publicaciones.length; else sinPosts">
+      <div class="post-card" *ngFor="let post of publicaciones">
+
+        <!-- Usuario (solo si existe) -->
+        <div *ngIf="post.usuarioId" class="post-header d-flex align-items-center gap-3 mb-2">
+          <img [src]="'https://i.pravatar.cc/50?u=' + post.usuarioId._id"
+                [alt]="'Foto de ' + post.usuarioId.username"
+                class="rounded-circle">
+          <div>
+            <strong>{{ post.usuarioId.username | MayusculaLetra }}</strong>
+            <p class="time mb-0 small">{{ post.createdAt | FormateoHora }}</p>
           </div>
-  
-          <!-- Mensaje -->
-          <p class="post-message">{{ post.mensaje | limitadorCaracteres }}</p>
-  
-          <!-- Imagen -->
-          <img *ngIf="post.imagen" [src]="post.imagen" alt="Foto de publicación" class="post-img mb-2 rounded">
-  
-          <!-- Acciones -->
-          <div class="actions d-flex gap-2 mt-2">
-            <button class="btn btn-sm"
-                    [ngClass]="{'btn-primary': post.likes.includes(usuarioLogueado?._id),
-                                'btn-outline-primary': !post.likes.includes(usuarioLogueado?._id)}"
-                    (click)="toggleLike(post)">
-              ❤️ {{ post.likes.length }}
-            </button>
-            <button class="btn btn-outline-secondary btn-sm">💬 Comentar</button>
-          </div>
-  
         </div>
+
+        <!-- 🟠 Si no hay usuarioId -->
+        <div *ngIf="!post.usuarioId" class="post-header d-flex align-items-center gap-3 mb-2">
+          <img src="https://i.pravatar.cc/50?u=anon" alt="Usuario desconocido" class="rounded-circle">
+          <div>
+            <strong>Usuario desconocido</strong>
+            <p class="time mb-0 small">{{ post.createdAt | FormateoHora }}</p>
+          </div>
+        </div>
+
+        <!-- Mensaje -->
+        <p class="post-message">{{ post.mensaje | limitadorCaracteres }}</p>
+
+        <!-- Imagen -->
+        <img
+        *ngIf="post.imagen"
+        [src]="'http://localhost:3000' + post.imagen"
+        alt="Foto de publicación"
+        class="post-img mb-2 rounded"
+      />
+
+      <div class="actions d-flex gap-2 mt-2">
+        <button type="button"
+        class="btn btn-sm"
+        [ngClass]="{
+          'btn-primary': yaLeDioLike(post),
+          'btn-outline-primary': !yaLeDioLike(post)
+        }"
+        (click)="toggleLike(post)">
+  ❤️ {{ post.likes.length || 0 }}
+</button>
+      
+        <button type="button" class="btn btn-outline-secondary btn-sm">
+          💬 Comentar
+        </button>
+      
+        <!-- Solo el dueño puede eliminar -->
+        <button *ngIf="post.usuarioId && (post.usuarioId._id === usuarioLogueado?._id || post.usuarioId._id === usuarioLogueado?.id)"
+        type="button"
+        class="btn btn-outline-danger btn-sm"
+        (click)="eliminarPublicacion(post._id)">
+          🗑 Eliminar
+        </button>
       </div>
-  
+      </div>
     </div>
+
+    <ng-template #sinPosts>
+      <p class="text-center text-muted mt-4">Aún no hay publicaciones 😔</p>
+    </ng-template>
   </div>
-  
+</div>

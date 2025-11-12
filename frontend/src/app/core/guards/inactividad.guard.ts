@@ -14,14 +14,12 @@ export class InactivdadGuard implements CanActivate, OnDestroy {
     constructor(private auth: AuthService, private router: Router) {}
 
     canActivate(): boolean {
-        // Solo activar inactividad si estamos en rutas protegidas
         const rutasProtegidas = ['/publicaciones', '/mi-perfil'];
 
         if (!rutasProtegidas.includes(this.router.url)) {
-            return true; // no hacer nada si estamos en login, registro, etc
+            return true; 
         }
 
-        // Observables de eventos de usuario
         const activityEvents = merge(
             fromEvent(document, 'mousemove'),
             fromEvent(document, 'mousedown'),
@@ -29,7 +27,6 @@ export class InactivdadGuard implements CanActivate, OnDestroy {
             fromEvent(document, 'touchstart')
         );
 
-        // Cada vez que hay actividad, resetea el timer
         this.inactivitySub = activityEvents.pipe(
             switchMap(() => timer(2 * 60 * 1000)) // 2 minutos
         ).subscribe(async () => {
@@ -42,7 +39,7 @@ export class InactivdadGuard implements CanActivate, OnDestroy {
                 allowEscapeKey: false,
             });
 
-            this.auth.logout(); // Limpiar token / estado de login
+            this.auth.logout();
             this.router.navigate(['/login']);
         });
 

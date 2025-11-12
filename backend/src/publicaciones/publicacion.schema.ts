@@ -15,7 +15,7 @@ export class Publicacion extends Document {
     @Prop({ type: Types.ObjectId, ref: 'User', required: true })
     usuarioId: Types.ObjectId;
 
-    @Prop({ type: [Types.ObjectId], ref: 'User', default: [] })
+    @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }], default: [] })
     likes: Types.ObjectId[];
 }
 

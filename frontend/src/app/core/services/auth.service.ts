@@ -13,12 +13,10 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   register(formData: FormData) {
-    // 🔹 Cambiamos la ruta a /auth/register
     return this.http.post(`${this.baseUrl}/auth/register`, formData);
   }
 
   login(data: any): Observable<any> {
-    // 🔹 Cambiamos la ruta a /auth/login
     return this.http.post(`${this.baseUrl}/auth/login`, data).pipe(
       tap((res: any) => {
         if (res.token) {
@@ -32,6 +30,7 @@ export class AuthService {
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');
+    window.location.href = '/login'; 
   }
 
   getToken() {
@@ -39,7 +38,8 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return !!this.getToken();
+    const token = localStorage.getItem('token');
+    return !!token; 
   }
 
   getUsuarioLogueado(): any {

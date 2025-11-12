@@ -26,14 +26,11 @@ export class AuthService {
                 ],
         };
     
-        console.log('Intentando login con:', emailOrUsername);
         const user = await this.userModel.findOne(query);
-        console.log('Usuario encontrado:', user);
         
         if (!user) return null;
         
         const passwordValid = await bcrypt.compare(password, user.password);
-        console.log('Password válido?', passwordValid);
         if (!passwordValid) return null;
         
         return user;
@@ -47,7 +44,6 @@ export class AuthService {
             throw new BadRequestException('Las contraseñas no coinciden');
         }
     
-        // Verificamos que no exista ya el email o nombre de usuario
         const existing = await this.userModel.findOne({
             $or: [{ email: dto.email }, { nombreUsuario: dto.nombreUsuario }],
         });
@@ -73,8 +69,7 @@ export class AuthService {
             imagenPerfil: imagenUrl || '',
         });
     
-        console.log('Usuario a guardar:', usuario); // 🔍 Ver en consola antes de guardar
-    
         return await usuario.save();
     }
+    
 }

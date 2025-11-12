@@ -6,7 +6,7 @@
     --border-radius: 10px;
     --transition: all 0.25s ease;
 }
-/* Fondo animado */
+
 .app-background {
     min-height: 100vh;
     width: 100%;
@@ -21,7 +21,6 @@
     100% { background-position:0% 50%; }
   }
   
-  /* Reset de márgenes de Bootstrap */
   body, html {
     margin: 0;
     padding: 0;
@@ -30,12 +29,11 @@
     overflow-x: hidden;
   }
   
-  /* Evitar que el container interno genere bordes blancos */
+  
   main, app-navbar, app-footer {
     width: 100%;
   }
 
-/* Títulos */
 h1, h2 {
     font-weight: 600;
     margin-bottom: 1rem;

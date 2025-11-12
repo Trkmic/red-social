@@ -5,10 +5,13 @@ import { AuthService } from '../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { AutofocusDirective } from '../../core/directivas/autofocus.directive';
+import { ClickControlDirective  } from '../../core/directivas/clickControl.directive';
+import { ResaltarInvalidoDirective  } from '../../core/directivas/resaltarInvalido.directive';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ResaltarInvalidoDirective, ClickControlDirective, AutofocusDirective],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
