@@ -7,6 +7,7 @@ import { environment } from '../../../environments/environment';
 @Injectable({
   providedIn: 'root'
 })
+
 export class AuthService {
   private baseUrl = environment.apiUrl;
 
@@ -51,5 +52,9 @@ export class AuthService {
       localStorage.removeItem('usuario');
       return null;
     }
+  }
+
+  getUsuarioPorId(id: string) {
+    return this.http.get(`${this.baseUrl}/usuarios/${id}`);
   }
 }

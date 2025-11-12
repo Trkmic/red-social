@@ -9,7 +9,11 @@ export interface Publicacion {
     titulo: string;
     mensaje: string;
     imagen?: string | null;
-    usuarioId: { _id: string; username: string };
+    usuarioId: {
+        _id: string;
+        nombreUsuario: string;
+        imagenPerfil?: string;
+    };
     likes: string[];
     createdAt: string;
     comentarios?: { texto: string; usuario: string }[];
@@ -35,13 +39,10 @@ export class PublicacionesService {
 
     getPublicacionesUsuario(userId: string, limit: number = 3): Observable<Publicacion[]> {
         return this.http.get<Publicacion[]>(
-        `${this.baseUrl}?usuario=${userId}&limit=${limit}&orden=fecha`
+            `${this.baseUrl}/usuario/${userId}?limit=${limit}&orden=fecha`
         );
     }
 
-    getUsuario(id: string): Observable<any> {
-        return this.http.get<any>(`${environment.apiUrl}/usuarios/${id}`);
-    }
 
     crearPublicacion(data: FormData): Observable<Publicacion> {
         const user = this.authService.getUsuarioLogueado();

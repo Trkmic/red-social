@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 import { AuthModule } from './auth/auth.module';
+import { UsuariosModule } from './auth/usuarios.module';
 import { PublicacionesModule } from './publicaciones/publicaciones.module';
 import { CloudinaryService } from './cloudinary/cloudinary.service';
 import { ValidarTamanioImagenMiddleware } from './middlewares/validar_tamanio_imagen.middlewares';
@@ -15,13 +16,9 @@ dotenv.config();
 
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.MONGO_URI!),
-    AuthModule,
-    PublicacionesModule,
-    DatabaseModule,
-  ],
-  controllers: [AppController], // 👈 solo el AppController
-  providers: [AppService, CloudinaryService], // 👈 no repetir los de Publicaciones
+    MongooseModule.forRoot(process.env.MONGO_URI!),AuthModule, PublicacionesModule,DatabaseModule,UsuariosModule],
+  controllers: [AppController], 
+  providers: [AppService, CloudinaryService], 
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

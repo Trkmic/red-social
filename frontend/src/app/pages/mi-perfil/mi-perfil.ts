@@ -49,7 +49,7 @@ export class MiPerfil implements OnInit {
       return;
     }
 
-    this.publicacionesService.getUsuario(storedUser.id).subscribe({
+    this.authService.getUsuarioPorId(storedUser.id).subscribe({
       next: (userFromServer: any) => {
         this.usuario = {
           _id: userFromServer._id,
@@ -60,8 +60,10 @@ export class MiPerfil implements OnInit {
       },
       error: (err: any) => console.error('Error al cargar usuario:', err)
     });
-
-    this.publicacionesService.getPublicacionesUsuario(storedUser.id, 3).subscribe({
+    
+    const userId = storedUser._id || storedUser.id;
+    console.log('🧍 ID del usuario logueado:', userId);
+    this.publicacionesService.getPublicacionesUsuario(userId, 3).subscribe({
       next: (res: Publicacion[]) => {
         this.publicaciones = res.map(pub => ({
           _id: pub._id,

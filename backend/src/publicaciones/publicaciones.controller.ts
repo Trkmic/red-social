@@ -20,8 +20,17 @@ export class PublicacionesController {
         const imageUrl = await this.cloudinaryService.uploadImage(file, 'publicaciones');
         data.imagen = imageUrl;
         }
-
+        console.log('📸 Publicación creada:', data.imagen);
         return this.publicacionesService.crear(data);
+    }
+
+    @Get('usuario/:id')
+    async obtenerPorUsuario(
+    @Param('id') id: string,
+    @Query('limit') limit?: string,
+    @Query('orden') orden?: 'fecha' | 'likes',
+    ) {
+    return this.publicacionesService.obtenerPorUsuario(id, { limit, orden });
     }
 
     @Get()
@@ -48,4 +57,7 @@ export class PublicacionesController {
     quitarLike(@Param('id') id: string, @Query('userId') userId: string) {
         return this.publicacionesService.quitarLike(id, userId);
     }
+
+
+
 }

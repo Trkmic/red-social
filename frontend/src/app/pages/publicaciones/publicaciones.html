@@ -1,76 +1,68 @@
 <div class="feed-background">
   <div class="feed-container">
-    <h2 class="feed-title mb-4 text-center"> Postea</h2>
+    <h2 class="feed-title mb-4 text-center">Postea</h2>
 
+    <!-- 🟢 Formulario nueva publicación -->
     <form [formGroup]="formPublicacion" (ngSubmit)="crearPublicacion()" class="new-post-form mb-4">
-      <input formControlName="titulo" type="text" class="form-control" placeholder="Título" appResaltarInvalido>
+      <input formControlName="titulo" type="text" class="form-control" placeholder="Título">
       <textarea formControlName="mensaje" class="form-control" placeholder="Mensaje"></textarea>
-      <input type="file" (change)="onFileChange($event)" class="form-control" appResaltarInvalido>
-      <button type="submit" class="btn post-btn" [disabled]="loading" appClickControl>
+      <input type="file" (change)="onFileChange($event)" class="form-control">
+      <button type="submit" class="btn post-btn" [disabled]="loading">
         {{ loading ? 'Publicando...' : 'Publicar' }}
       </button>
     </form>
 
-
     <h2 class="feed-title mb-4 text-center">Publicaciones</h2>
-    
-    <div class="posts-feed" *ngIf="publicaciones.length; else sinPosts">
-      <div class="post-card" *ngFor="let post of publicaciones">
 
-        <!-- Usuario (solo si existe) -->
-        <div *ngIf="post.usuarioId" class="post-header d-flex align-items-center gap-3 mb-2">
-          <img [src]="'https://i.pravatar.cc/50?u=' + post.usuarioId._id"
-                [alt]="'Foto de ' + post.usuarioId.username"
-                class="rounded-circle">
-          <div>
-            <strong>{{ post.usuarioId.username | MayusculaLetra }}</strong>
-            <p class="time mb-0 small">{{ post.createdAt | FormateoHora }}</p>
-          </div>
+    <div *ngIf="publicaciones.length > 0; else sinPosts">
+      <div *ngFor="let pub of publicaciones" class="mini-post text-start mb-5">
+
+        <!-- Usuario -->
+        <div class="d-flex align-items-center gap-3 mb-2">
+          <img [src]="pub.usuarioId.imagenPerfil || '/icons/14.png'"
+               alt="Usuario"
+               class="rounded-circle"
+               width="40" height="40">
+          <strong>{{ pub.usuarioId.nombreUsuario | MayusculaLetra }}</strong>
         </div>
 
-        <!-- 🟠 Si no hay usuarioId -->
-        <div *ngIf="!post.usuarioId" class="post-header d-flex align-items-center gap-3 mb-2">
-          <img src="https://i.pravatar.cc/50?u=anon" alt="Usuario desconocido" class="rounded-circle">
-          <div>
-            <strong>Usuario desconocido</strong>
-            <p class="time mb-0 small">{{ post.createdAt | FormateoHora }}</p>
-          </div>
-        </div>
+        <!-- Título -->
+        <h5 class="fw-bold mb-1">{{ pub.titulo | MayusculaLetra }}</h5>
+
+        <!-- Fecha -->
+        <small class="text-muted d-block mb-2">📅 {{ pub.createdAt | FormateoHora }}</small>
 
         <!-- Mensaje -->
-        <p class="post-message">{{ post.mensaje | limitadorCaracteres }}</p>
+        <p class="text-muted mb-2">{{ pub.mensaje | limitadorCaracteres:200 }}</p>
 
         <!-- Imagen -->
-        <img
-        *ngIf="post.imagen"
-        [src]="post.imagen.startsWith('http') ? post.imagen : 'http://localhost:3000' + post.imagen"
-        alt="Foto de publicación"
-        class="post-img mb-2 rounded"
-      />
+        <img [src]="pub.imagen " class="post-img" >
 
-      <div class="actions d-flex gap-2 mt-2">
-        <button type="button"
-        class="btn btn-sm"
-        [ngClass]="{
-          'btn-primary': yaLeDioLike(post),
-          'btn-outline-primary': !yaLeDioLike(post)
-        }"
-        (click)="toggleLike(post)">
-  ❤️ {{ post.likes.length || 0 }}
-</button>
-      
-        <button type="button" class="btn btn-outline-secondary btn-sm">
-          💬 Comentar
-        </button>
-      
-        <!-- Solo el dueño puede eliminar -->
-        <button *ngIf="post.usuarioId && (post.usuarioId._id === usuarioLogueado?._id || post.usuarioId._id === usuarioLogueado?.id)"
-        type="button"
-        class="btn btn-outline-danger btn-sm"
-        (click)="eliminarPublicacion(post._id)">
-          🗑 Eliminar
-        </button>
-      </div>
+        <!-- Acciones -->
+        <div class="actions d-flex gap-2 mt-2">
+          <button type="button"
+                  class="btn btn-sm"
+                  [ngClass]="{
+                    'btn-primary': yaLeDioLike(pub),
+                    'btn-outline-primary': !yaLeDioLike(pub)
+                  }"
+                  (click)="toggleLike(pub)">
+            ❤️ {{ pub.likes.length || 0 }}
+          </button>
+
+          <button type="button" class="btn btn-outline-secondary btn-sm">
+            💬 Comentar
+          </button>
+
+          <button *ngIf="pub.usuarioId && (pub.usuarioId._id === usuarioLogueado?._id || pub.usuarioId._id === usuarioLogueado?.id)"
+                  type="button"
+                  class="btn btn-outline-danger btn-sm"
+                  (click)="eliminarPublicacion(pub._id)">
+            🗑 Eliminar
+          </button>
+        </div>
+
+        <hr>
       </div>
     </div>
 
@@ -79,3 +71,4 @@
     </ng-template>
   </div>
 </div>
+

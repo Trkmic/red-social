@@ -6,6 +6,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { LimitadorCaracteresPipe } from '../../core/pipes/limitador_caracteres.pipe';
 import { FormateoHoraPipe } from '../../core/pipes/formateo_hora.pipe';
 import { MayusculaLetraPipe } from '../../core/pipes/mayuscula_letra.pipe';
+import { environment } from '../../../environments/environment';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -27,6 +28,7 @@ export class Publicaciones implements OnInit {
   usuarioLogueado: any = null;
   loading = false;
   selectedFile: File | null = null;
+  environment = environment; // ✅ para usar en el HTML
 
   constructor(
     private fb: FormBuilder,
@@ -49,11 +51,9 @@ export class Publicaciones implements OnInit {
     this.cargarPublicaciones();
   }
 
-  /** 🔹 Cargar publicaciones */
   cargarPublicaciones(): void {
     this.pubService.obtenerPublicaciones().subscribe({
       next: (data) => {
-        // Convertir todos los likes a strings
         this.publicaciones = data.map(post => ({
           ...post,
           likes: post.likes?.map(l => l.toString()) || []
@@ -62,13 +62,11 @@ export class Publicaciones implements OnInit {
     });
   }
 
-  /** 🔹 Like / Unlike */
   toggleLike(pub: Publicacion) {
     if (!this.usuarioLogueado?._id) return;
-  
     const liked = pub.likes?.map(l => l.toString()).includes(this.usuarioLogueado._id);
     const obs = liked ? this.pubService.quitarLike(pub._id) : this.pubService.darLike(pub._id);
-  
+
     obs.subscribe({
       next: updatedPub => {
         const index = this.publicaciones.findIndex(p => p._id === updatedPub._id);
@@ -76,19 +74,16 @@ export class Publicaciones implements OnInit {
       },
     });
   }
-  
-  /** Helper para ngClass */
+
   yaLeDioLike(pub: Publicacion): boolean {
     return pub.likes?.map(l => l.toString()).includes(this.usuarioLogueado?._id) || false;
   }
 
-  /** 🔹 Subir imagen */
   onFileChange(event: any): void {
     const file = event.target.files[0];
     if (file) this.selectedFile = file;
   }
 
-  /** 🔹 Crear publicación */
   crearPublicacion(): void {
     if (this.formPublicacion.invalid) return;
     this.loading = true;
@@ -105,9 +100,7 @@ export class Publicaciones implements OnInit {
         this.selectedFile = null;
         this.cargarPublicaciones();
       },
-      error: (err) => {
-        this.loading = false;
-      }
+      error: () => this.loading = false
     });
   }
 
@@ -126,25 +119,14 @@ export class Publicaciones implements OnInit {
         this.pubService.eliminarPublicacion(id).subscribe({
           next: () => {
             this.cargarPublicaciones();
-            Swal.fire({
-              title: 'Eliminada',
-              text: 'La publicación fue eliminada con éxito.',
-              icon: 'success',
-              confirmButtonColor: '#3085d6'
-            });
+            Swal.fire('Eliminada', 'La publicación fue eliminada con éxito.', 'success');
           },
           error: (err) => {
             console.error('Error al eliminar:', err);
-            Swal.fire({
-              title: 'Error',
-              text: 'Ocurrió un problema al eliminar la publicación.',
-              icon: 'error',
-              confirmButtonColor: '#3085d6'
-            });
+            Swal.fire('Error', 'Ocurrió un problema al eliminar la publicación.', 'error');
           }
         });
       }
     });
   }
 }
-

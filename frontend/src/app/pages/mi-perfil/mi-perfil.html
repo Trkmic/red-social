@@ -18,14 +18,15 @@
           <strong>{{ pub.usuarioId.nombreUsuario || 'Usuario desconocido' }}</strong>
         </div>
 
+
+        <h5 class="fw-bold mb-2">{{ pub.titulo }}</h5>
+
+
         <!-- Mensaje -->
         <p class="text-muted mb-2">{{ pub.mensaje }}</p>
 
         <!-- Imagen si tiene -->
-        <img *ngIf="pub.imagen" 
-              [src]="'http://localhost:3000' + pub.imagen" 
-              alt="imagen publicación" 
-              class="img-fluid rounded shadow-sm mb-2">
+        <img [src]="pub.imagen || '/icons/default.png'" class="post-img">
 
         <!-- Comentarios -->
         <div *ngIf="pub.comentarios?.length" class="comentarios mt-2">
