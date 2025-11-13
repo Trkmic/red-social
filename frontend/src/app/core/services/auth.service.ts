@@ -57,4 +57,21 @@ export class AuthService {
   getUsuarioPorId(id: string) {
     return this.http.get(`${this.baseUrl}/usuarios/${id}`);
   }
+
+  actualizarUsuario(id: string, data: any): Observable<any> {
+    // Usamos PUT para reemplazar/actualizar los datos del usuario
+    return this.http.put(`${this.baseUrl}/usuarios/${id}`, data).pipe(
+      tap((usuarioActualizado: any) => {
+        // IMPORTANTE: Actualizar el usuario en localStorage
+        // para que los cambios se reflejen en toda la app
+        
+        // Primero, normalizamos el ID (por si acaso el backend solo devuelve 'id')
+        if (usuarioActualizado.id && !usuarioActualizado._id) {
+          usuarioActualizado._id = usuarioActualizado.id;
+        }
+
+        localStorage.setItem('usuario', JSON.stringify(usuarioActualizado));
+      })
+    );
+  }
 }

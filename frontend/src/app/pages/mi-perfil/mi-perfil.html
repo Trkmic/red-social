@@ -1,34 +1,91 @@
 <div class="container my-5">
   <div class="perfil-container card mx-auto text-center p-4 shadow-sm border-0">
+    
+    <div *ngIf="usuario">
+      <img
+        [src]="usuario.imagenPerfil || '/icons/14.png'"
+        alt="Foto de perfil"
+        class="rounded-circle shadow-sm mb-3"
+        width="120" height="120" style="object-fit: cover"
+      />
 
-    <hr class="my-4">
+      <h2 class="fw-bold">{{ usuario.nombreUsuario }}</h2>
 
-    <!-- Últimas publicaciones -->
+      
+      
+      <div *ngIf="!editando">
+        <h4 *ngIf="usuario.nombre || usuario.apellido" class="fw-light text-muted mb-3">
+          {{ usuario.nombre }} {{ usuario.apellido }}
+        </h4>
+        
+        <p *ngIf="usuario.descripcion" class="text-muted fst-italic">
+          "{{ usuario.descripcion }}"
+        </p>
+        
+        <div *ngIf="usuario.fechaNacimiento" class="text-muted small mt-2">
+          <strong>Fecha de nacimiento:</strong>
+          {{ usuario.fechaNacimiento | date : 'dd/MM/yyyy' }}
+        </div>
+      </div>
+      
+      <button *ngIf="!editando" (click)="editando = true" class="btn btn-outline-primary btn-sm mt-2 mb-3">
+        Editar Perfil
+      </button>
+      
+      <form [formGroup]="formPerfil" (ngSubmit)="guardarPerfil()" *ngIf="editando" class="text-start mt-3">
+
+        <div class="mb-3">
+          <label for="nombre" class="form-label">Nombre</label>
+          <input type="text" id="nombre" class="form-control" formControlName="nombre">
+        </div>
+
+        <div class="mb-3">
+          <label for="apellido" class="form-label">Apellido</label>
+          <input type="text" id="apellido" class="form-control" formControlName="apellido">
+        </div>
+
+        <div class="mb-3">
+          <label for="descripcion" class="form-label">Descripción</label>
+          <textarea id="descripcion" class="form-control" formControlName="descripcion" rows="3"></textarea>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4">
+          <button type="button" (click)="cancelarEdicion()" class="btn btn-secondary">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="formPerfil.invalid || formPerfil.pristine">
+            Guardar Cambios
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+    <hr class="my-4" />
+
     <h3 class="fw-semibold mb-3">Mis últimas publicaciones</h3>
 
     <div *ngIf="publicaciones.length > 0; else sinPublicaciones">
       <div *ngFor="let pub of publicaciones" class="mini-post text-start mb-5">
-
-        <!-- Usuario de la publicación -->
         <div class="d-flex align-items-center gap-3 mb-2">
-          <img [src]="pub.usuarioId.imagenPerfil || '/icons/14.png'" 
-                alt="Usuario" 
-                class="rounded-circle" 
-                width="40" height="40">
-          <strong>{{ pub.usuarioId.nombreUsuario || 'Usuario desconocido' }}</strong>
+          <img
+            [src]="pub.usuarioId.imagenPerfil || '/icons/14.png'"
+            alt="Usuario"
+            class="rounded-circle"
+            width="40"
+            height="40"
+          />
+          <strong>{{
+            pub.usuarioId.nombreUsuario || 'Usuario desconocido'
+          }}</strong>
         </div>
-
 
         <h5 class="fw-bold mb-2">{{ pub.titulo }}</h5>
 
-
-        <!-- Mensaje -->
         <p class="text-muted mb-2">{{ pub.mensaje }}</p>
 
-        <!-- Imagen si tiene -->
-        <img [src]="pub.imagen || '/icons/default.png'" class="post-img">
+        <img [src]="pub.imagen || '/icons/default.png'" class="post-img" *ngIf="pub.imagen"/>
 
-        <!-- Comentarios -->
         <div *ngIf="pub.comentarios?.length" class="comentarios mt-2">
           <h6 class="fw-semibold small text-muted mb-1">Comentarios:</h6>
           <p *ngFor="let c of pub.comentarios" class="text-muted small mb-1">
@@ -36,15 +93,12 @@
           </p>
         </div>
 
-        <hr>
+        <hr />
       </div>
     </div>
 
     <ng-template #sinPublicaciones>
       <p class="text-muted fst-italic">Aún no realizaste publicaciones.</p>
     </ng-template>
-
   </div>
 </div>
-
-

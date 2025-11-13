@@ -16,7 +16,6 @@ export class Navbar {
 
   constructor(private router: Router, private auth: AuthService) { 
 
-    // Escuchar cambios de ruta
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         const url = event.urlAfterRedirects || event.url;

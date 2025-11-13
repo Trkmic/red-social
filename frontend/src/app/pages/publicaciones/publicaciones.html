@@ -4,15 +4,35 @@
 
     <!-- 🟢 Formulario nueva publicación -->
     <form [formGroup]="formPublicacion" (ngSubmit)="crearPublicacion()" class="new-post-form mb-4">
-      <input formControlName="titulo" type="text" class="form-control" placeholder="Título">
-      <textarea formControlName="mensaje" class="form-control" placeholder="Mensaje"></textarea>
+      <input formControlName="titulo" type="text" class="form-control" placeholder="Título" maxlength="50" #tituloInput>
+      <small> {{tituloInput.value.length}}/50 </small>
+
+      <textarea formControlName="mensaje" class="form-control" placeholder="Mensaje" maxlength="100" #mensajeInput></textarea>
+      <small> {{mensajeInput.value.length}}/100 </small>
+
       <input type="file" (change)="onFileChange($event)" class="form-control">
-      <button type="submit" class="btn post-btn" [disabled]="loading">
+      
+      <button type="submit" class="btn post-btn" [disabled]="loading || formPublicacion.invalid">
         {{ loading ? 'Publicando...' : 'Publicar' }}
       </button>
     </form>
 
     <h2 class="feed-title mb-4 text-center">Publicaciones</h2>
+
+    <div class="text-center mb-3 d-flex justify-content-center gap-2">
+      <button class="btn btn-sm"
+              [class.btn-primary]="ordenActual === 'fecha'"
+              [class.btn-outline-secondary]="ordenActual !== 'fecha'"
+              (click)="cambiarOrden('fecha')">
+        📅 Más Recientes
+      </button>
+      <button class="btn btn-sm"
+              [class.btn-primary]="ordenActual === 'likes'"
+              [class.btn-outline-secondary]="ordenActual !== 'likes'"
+              (click)="cambiarOrden('likes')">
+        ❤️ Más Likes
+      </button>
+    </div>
 
     <div *ngIf="publicaciones.length > 0; else sinPosts">
       <div *ngFor="let pub of publicaciones" class="mini-post text-start mb-5">
@@ -20,9 +40,9 @@
         <!-- Usuario -->
         <div class="d-flex align-items-center gap-3 mb-2">
           <img [src]="pub.usuarioId.imagenPerfil || '/icons/14.png'"
-               alt="Usuario"
-               class="rounded-circle"
-               width="40" height="40">
+              alt="Usuario"
+              class="rounded-circle"
+              width="40" height="40">
           <strong>{{ pub.usuarioId.nombreUsuario | MayusculaLetra }}</strong>
         </div>
 
@@ -36,7 +56,7 @@
         <p class="text-muted mb-2">{{ pub.mensaje | limitadorCaracteres:200 }}</p>
 
         <!-- Imagen -->
-        <img [src]="pub.imagen " class="post-img" >
+        <img [src]="pub.imagen" class="post-img" *ngIf="pub.imagen">
 
         <!-- Acciones -->
         <div class="actions d-flex gap-2 mt-2">
@@ -54,12 +74,20 @@
             💬 Comentar
           </button>
 
-          <button *ngIf="pub.usuarioId && (pub.usuarioId._id === usuarioLogueado?._id || pub.usuarioId._id === usuarioLogueado?.id)"
+          <button *ngIf="pub.usuarioId && ( (pub.usuarioId._id === usuarioLogueado?._id || pub.usuarioId._id === usuarioLogueado?.id) || isAdmin )"
                   type="button"
                   class="btn btn-outline-danger btn-sm"
                   (click)="eliminarPublicacion(pub._id)">
             🗑 Eliminar
           </button>
+
+          <button *ngIf="pub.usuarioId && ( (pub.usuarioId._id === usuarioLogueado?._id || pub.usuarioId._id === usuarioLogueado?.id))"
+                  type="button"
+                  class="btn btn-outline-secondary btn-sm"
+                  (click)="editarPublicacion(pub)">
+            ✏️ Editar
+          </button>
+
         </div>
 
         <hr>

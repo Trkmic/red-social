@@ -56,16 +56,18 @@ export class PublicacionesService {
         return this.http.post<Publicacion>(this.baseUrl, data);
     }
 
-    darLike(id: string): Observable<Publicacion> {
-        const user = this.authService.getUsuarioLogueado();
-        if (!user?._id) return throwError(() => new Error('Usuario no logueado'));
-        return this.http.post<Publicacion>(`${this.baseUrl}/${id}/like`, { userId: user._id });
+    // ✅ MODIFICADO: Aceptar 'userId' como argumento
+    darLike(id: string, userId: string): Observable<Publicacion> {
+        // Ya no buscamos al usuario aquí, confiamos en el argumento
+        if (!userId) return throwError(() => new Error('No se proveyó userId para dar like'));
+        return this.http.post<Publicacion>(`${this.baseUrl}/${id}/like`, { userId: userId });
     }
 
-    quitarLike(id: string): Observable<Publicacion> {
-        const user = this.authService.getUsuarioLogueado();
-        if (!user?._id) return throwError(() => new Error('Usuario no logueado'));
-        return this.http.delete<Publicacion>(`${this.baseUrl}/${id}/like?userId=${user._id}`);
+    // ✅ MODIFICADO: Aceptar 'userId' como argumento
+    quitarLike(id: string, userId: string): Observable<Publicacion> {
+        // Ya no buscamos al usuario aquí, confiamos en el argumento
+        if (!userId) return throwError(() => new Error('No se proveyó userId para quitar like'));
+        return this.http.delete<Publicacion>(`${this.baseUrl}/${id}/like?userId=${userId}`);
     }
 
     eliminarPublicacion(id: string): Observable<any> {
@@ -74,5 +76,15 @@ export class PublicacionesService {
 
         const userId = user._id || user.id;
         return this.http.delete(`${this.baseUrl}/${id}?userId=${userId}`);
+    }
+
+
+    actualizarPublicacion(id: string, data: { titulo: string; mensaje: string }): Observable<Publicacion> {
+        const user = this.authService.getUsuarioLogueado();
+        if (!user) return throwError(() => new Error('Usuario no logueado'));
+        
+        const body = { ...data, userId: user._id || user.id };
+        
+        return this.http.put<Publicacion>(`${this.baseUrl}/${id}`, body);
     }
 }

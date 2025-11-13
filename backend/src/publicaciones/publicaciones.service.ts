@@ -1,21 +1,20 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, SortOrder, Types } from 'mongoose';
 import { Publicacion } from './publicacion.schema';
+import { User } from '../auth/user.schema';
 
 @Injectable()
 export class PublicacionesService {
     constructor(
         @InjectModel(Publicacion.name)
         private readonly publicacionModel: Model<Publicacion>,
-    ) {}
+        @InjectModel(User.name) // 2. INYECTAR EL MODELO USER
+        private readonly userModel: Model<User>,
+      ) {}
 
     async crear(data: any): Promise<Publicacion> {
         try {
-          if (data.usuarioId && typeof data.usuarioId === 'string') {
-            data.usuarioId = new Types.ObjectId(data.usuarioId);
-          }
-      
           const nueva = new this.publicacionModel(data);
           return await nueva.save();
         } catch (error) {
@@ -23,20 +22,13 @@ export class PublicacionesService {
         }
     }
 
-    async obtenerTodas(options: {
-        usuario?: string;
-        limit?: string;
-        offset?: string;
-        orden?: 'fecha' | 'likes';
-      }): Promise<Publicacion[]> {
+    async obtenerTodas(options: { usuario?: string; limit?: string; offset?: string; orden?: 'fecha' | 'likes'; }): Promise<Publicacion[]> {
         try {
           const { usuario, limit, offset, orden } = options;
       
-          // 🔧 Ordenar por likes o por fecha
           const sortOption: Record<string, SortOrder> =
             orden === 'likes' ? { likes: -1 } : { createdAt: -1 };
       
-          // 🔥 Si hay usuario => filtrar por ese usuario, sino traer todas
           const query: any = {};
           if (usuario) {
             query.usuarioId = usuario;
@@ -51,11 +43,11 @@ export class PublicacionesService {
             })
             .sort(sortOption)
             .skip(offset ? parseInt(offset) : 0)
-            .limit(limit ? parseInt(limit) : 10); // 10 por defecto
+            .limit(limit ? parseInt(limit) : 10);
       
           return publicaciones;
         } catch (error: any) {
-          console.error('🔥 Error en obtenerTodas:', error);
+          console.error(' Error en obtenerTodas:', error);
           throw new HttpException(
             'Error interno al obtener publicaciones: ' + error.message,
             HttpStatus.INTERNAL_SERVER_ERROR,
@@ -137,12 +129,12 @@ export class PublicacionesService {
           const sortOption: Record<string, SortOrder> =
             orden === 'likes' ? { likes: -1 } : { createdAt: -1 };
       
-          // 🔧 Buscar por string o por ObjectId (ambos casos posibles)
+          
           const publicaciones = await this.publicacionModel
             .find({
               $or: [
-                { usuarioId }, // si se guardó como string
-                { usuarioId: new Types.ObjectId(usuarioId) }, // si se guardó como ObjectId
+                { usuarioId }, 
+                { usuarioId: new Types.ObjectId(usuarioId) }, 
               ],
             })
             .populate({
@@ -155,11 +147,31 @@ export class PublicacionesService {
       
           return publicaciones;
         } catch (error: any) {
-          console.error('🔥 Error en obtenerPorUsuario:', error);
+          console.error(' Error en obtenerPorUsuario:', error);
           throw new HttpException(
             'Error interno al obtener publicaciones del usuario: ' + error.message,
             HttpStatus.INTERNAL_SERVER_ERROR,
           );
         }
       }
+
+      async actualizar(id: string, userId: string, data: { titulo?: string; mensaje?: string }) {
+        
+        // A. Buscar el usuario que hace la petición
+        const user = await this.userModel.findById(userId);
+        if (!user) {
+            throw new UnauthorizedException('Usuario no válido');
+        }
+
+        // B. Buscar la publicación
+        const publicacion = await this.publicacionModel.findById(id);
+        if (!publicacion) {
+            throw new NotFoundException('Publicación no encontrada');
+        }
+
+        
+        // D. Actualizar y devolver
+        return this.publicacionModel.findByIdAndUpdate(id, data, { new: true });
+    }
+
 }

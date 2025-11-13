@@ -1,7 +1,6 @@
-import { Controller, Get, Post, Body, Delete, Param, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Delete, Param, Query, UseInterceptors, UploadedFile, Put } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage, memoryStorage } from 'multer';
-import { extname } from 'path';
+import { memoryStorage } from 'multer';
 import { PublicacionesService } from './publicaciones.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
@@ -15,12 +14,10 @@ export class PublicacionesController {
     @Post()
     @UseInterceptors(FileInterceptor('imagen', { storage: memoryStorage() }))
     async crear(@UploadedFile() file: Express.Multer.File, @Body() data: any) {
-        // ✅ Subir la imagen a Cloudinary si existe
         if (file) {
         const imageUrl = await this.cloudinaryService.uploadImage(file, 'publicaciones');
         data.imagen = imageUrl;
         }
-        console.log('📸 Publicación creada:', data.imagen);
         return this.publicacionesService.crear(data);
     }
 
@@ -58,6 +55,14 @@ export class PublicacionesController {
         return this.publicacionesService.quitarLike(id, userId);
     }
 
-
+    @Put(':id')
+    async actualizar(
+        @Param('id') id: string,
+        @Body() data: any, // data ya incluye { titulo, mensaje, userId } desde el frontend
+    ) {
+        const { userId, ...updateData } = data; // Separamos el userId del resto de los datos
+        // Pasamos el ID del post, el ID del usuario (para validación) y los datos a actualizar
+        return this.publicacionesService.actualizar(id, userId, updateData);
+    }
 
 }
