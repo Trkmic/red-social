@@ -35,6 +35,12 @@
       <form [formGroup]="formPerfil" (ngSubmit)="guardarPerfil()" *ngIf="editando" class="text-start mt-3">
 
         <div class="mb-3">
+          <label for="imagenPerfil" class="form-label">Foto de Perfil</label>
+          <input type="file" id="imagenPerfil" class="form-control" (change)="onFileChange($event)">
+          <small class="form-text text-muted">Deja en blanco para no cambiar la foto actual.</small>
+        </div>
+
+        <div class="mb-3">
           <label for="nombre" class="form-label">Nombre</label>
           <input type="text" id="nombre" class="form-control" formControlName="nombre">
         </div>

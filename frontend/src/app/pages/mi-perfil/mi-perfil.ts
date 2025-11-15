@@ -43,6 +43,7 @@ export class MiPerfil implements OnInit {
 
   formPerfil: FormGroup;
   editando = false;
+  selectedFile: File | null = null;
 
   constructor(
     private authService: AuthService,
@@ -111,34 +112,39 @@ export class MiPerfil implements OnInit {
     });
   }
 
+  onFileChange(event: any): void {
+    const file = event.target.files?.[0];
+    if (file) {
+      this.selectedFile = file;
+    }
+  }
+
   guardarPerfil(): void {
     if (this.formPerfil.invalid) {
-      Swal.fire('Error', 'Nombre y Apellido son obligatorios.', 'error');
+      // ... (error)
       return;
     }
-
     if (!this.usuario) return;
 
     const data = this.formPerfil.value;
 
-    this.authService.actualizarUsuario(this.usuario._id, data).subscribe({
+    // 3. PASAR EL ARCHIVO SELECCIONADO AL SERVICIO
+    this.authService.actualizarUsuario(this.usuario._id, data, this.selectedFile).subscribe({
       next: (usuarioActualizado) => {
-        // Actualizamos el objeto 'usuario' local con los nuevos datos
         this.usuario = { ...this.usuario, ...usuarioActualizado }; 
-        this.editando = false; // Salimos del modo edición
+        this.editando = false;
+        this.selectedFile = null; // 4. Limpiar el archivo
         Swal.fire('¡Éxito!', 'Tu perfil ha sido actualizado.', 'success');
       },
       error: (err) => {
-        console.error('Error al actualizar:', err);
-        Swal.fire('Error', 'No se pudo actualizar el perfil.', 'error');
+        // ... (error)
       }
     });
   }
 
-  // === 9. AÑADIR MÉTODO PARA CANCELAR ===
   cancelarEdicion(): void {
     this.editando = false;
-    // Reseteamos el formulario a los valores originales del usuario
+    this.selectedFile = null; // 5. Limpiar el archivo
     if (this.usuario) {
       this.formPerfil.patchValue(this.usuario);
     }

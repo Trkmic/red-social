@@ -21,6 +21,11 @@ export class PublicacionesController {
         return this.publicacionesService.crear(data);
     }
 
+    @Get(':id')
+    async obtenerPorId(@Param('id') id: string) {
+        return this.publicacionesService.obtenerPorId(id);
+    }
+
     @Get('usuario/:id')
     async obtenerPorUsuario(
     @Param('id') id: string,

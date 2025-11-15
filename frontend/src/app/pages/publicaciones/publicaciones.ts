@@ -7,14 +7,14 @@ import { LimitadorCaracteresPipe } from '../../core/pipes/limitador_caracteres.p
 import { FormateoHoraPipe } from '../../core/pipes/formateo_hora.pipe';
 import { MayusculaLetraPipe } from '../../core/pipes/mayuscula_letra.pipe';
 import { environment } from '../../../environments/environment';
+import { RouterLink } from '@angular/router'; 
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-publicaciones',
   templateUrl: './publicaciones.html',
   styleUrls: ['./publicaciones.css'],
-  imports: [CommonModule, ReactiveFormsModule, LimitadorCaracteresPipe, FormateoHoraPipe, MayusculaLetraPipe
-  ],
+  imports: [RouterLink,CommonModule, ReactiveFormsModule, LimitadorCaracteresPipe, FormateoHoraPipe, MayusculaLetraPipe],
   standalone: true
 })
 
@@ -31,6 +31,12 @@ export class Publicaciones implements OnInit {
   userId: string | null = null; 
   isAdmin = false;
 
+  formEditarPost: FormGroup; // Formulario para EDITAR
+  idPostEditando: string | null = null; // ID del post que estamos editando
+  selectedFileEdit: File | null = null; // Archivo para el post que estamos editando
+  loadingEdit = false; // Loading para el botón de guardar edición
+
+
   constructor(
     private fb: FormBuilder,
     private pubService: PublicacionesService,
@@ -42,6 +48,11 @@ export class Publicaciones implements OnInit {
       mensaje: ['', [Validators.required, Validators.maxLength(100)]],
       imagen: [null],
       
+    });
+
+    this.formEditarPost = this.fb.group({
+      titulo: ['', Validators.required],
+      mensaje: ['', Validators.required]
     });
   }
 
@@ -153,6 +164,8 @@ export class Publicaciones implements OnInit {
         this.loading = false;
         this.formPublicacion.reset();
         this.selectedFile = null;
+        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+        if (fileInput) fileInput.value = '';
         this.cargarPublicaciones();
       },
 
@@ -188,44 +201,50 @@ export class Publicaciones implements OnInit {
     });
   }
 
+  onFileChangeEdit(event: any): void {
+    const file = event.target.files?.[0];
+    if (file) {
+      this.selectedFileEdit = file;
+    }
+  }
+
   editarPublicacion(pub: Publicacion): void {
-    Swal.fire({
-      title: 'Editar Publicación',
-      // Usamos HTML para crear un mini-formulario dentro del pop-up
-      html: `
-        <input id="swal-titulo" class="swal2-input" placeholder="Título" value="${pub.titulo}">
-        <textarea id="swal-mensaje" class="swal2-textarea" placeholder="Mensaje">${pub.mensaje}</textarea>
-      `,
-      confirmButtonText: 'Guardar Cambios',
-      showCancelButton: true,
-      cancelButtonText: 'Cancelar',
-      focusConfirm: false,
-      // preConfirm se ejecuta antes de confirmar y nos da los valores
-      preConfirm: () => {
-        const titulo = (document.getElementById('swal-titulo') as HTMLInputElement).value;
-        const mensaje = (document.getElementById('swal-mensaje') as HTMLTextAreaElement).value;
-        
-        if (!titulo || !mensaje) {
-          Swal.showValidationMessage(`El título y el mensaje son obligatorios`);
-          return false; // Evita que se cierre
-        }
-        return { titulo, mensaje };
-      }
-    }).then((result) => {
-      // Si el usuario confirmó y preConfirm devolvió los datos
-      if (result.isConfirmed && result.value) {
-        const { titulo, mensaje } = result.value;
-        
-        this.pubService.actualizarPublicacion(pub._id, { titulo, mensaje }).subscribe({
-          next: () => {
-            this.cargarPublicaciones(); // Recargamos los posts para ver el cambio
-            Swal.fire('¡Actualizado!', 'Tu publicación ha sido modificada.', 'success');
-          },
-          error: (err) => {
-            console.error('Error al actualizar:', err);
-            Swal.fire('Error', 'No se pudo actualizar la publicación.', 'error');
-          }
-        });
+    this.idPostEditando = pub._id; // Marcamos este post como "editando"
+    this.selectedFileEdit = null; // Limpiamos el archivo anterior
+    
+    // Rellenamos el formulario de edición con los datos actuales
+    this.formEditarPost.patchValue({
+      titulo: pub.titulo,
+      mensaje: pub.mensaje
+    });
+  }
+
+  cancelarEdicion(): void {
+    this.idPostEditando = null;
+    this.selectedFileEdit = null;
+  }
+
+  guardarEdicionPost(): void {
+    if (!this.idPostEditando || this.formEditarPost.invalid) {
+      return;
+    }
+    this.loadingEdit = true;
+
+    const data = this.formEditarPost.value; // { titulo, mensaje }
+
+    // Llamamos al servicio (que ahora modificaremos para que acepte un archivo)
+    this.pubService.actualizarPublicacion(this.idPostEditando, data, this.selectedFileEdit).subscribe({
+      next: () => {
+        this.loadingEdit = false;
+        this.idPostEditando = null; // Salimos del modo edición
+        this.selectedFileEdit = null;
+        this.cargarPublicaciones(); // Recargamos todo
+        Swal.fire('¡Actualizado!', 'Publicación modificada.', 'success');
+      },
+      error: (err) => {
+        this.loadingEdit = false;
+        console.error('Error al actualizar:', err);
+        Swal.fire('Error', 'No se pudo actualizar la publicación.', 'error');
       }
     });
   }

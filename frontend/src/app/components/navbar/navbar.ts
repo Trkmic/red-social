@@ -30,7 +30,10 @@ export class Navbar {
         } else if (url.includes('/mi-perfil')) {
           this.showPublicaciones = true;
           this.showSalir = true;
-        }
+        }else if (url.startsWith('/publicacion/')) {
+          this.showPublicaciones = true;
+          this.showSalir = true;
+      }
       }
     });
   }

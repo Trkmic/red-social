@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
+import { Comentario } from '../../pages/publicacion-detalle/publicacion-detalle'; 
 
 export interface Publicacion {
     _id: string;
@@ -16,7 +17,7 @@ export interface Publicacion {
     };
     likes: string[];
     createdAt: string;
-    comentarios?: { texto: string; usuario: string }[];
+    comentarios?: any[];
 }
 
 @Injectable({
@@ -24,6 +25,7 @@ export interface Publicacion {
 })
 export class PublicacionesService {
     private baseUrl = `${environment.apiUrl}/publicaciones`;
+    private comentariosUrl = `${environment.apiUrl}/comentarios`;
 
     constructor(private http: HttpClient, private authService: AuthService) {}
 
@@ -56,16 +58,16 @@ export class PublicacionesService {
         return this.http.post<Publicacion>(this.baseUrl, data);
     }
 
-    // ✅ MODIFICADO: Aceptar 'userId' como argumento
+
     darLike(id: string, userId: string): Observable<Publicacion> {
-        // Ya no buscamos al usuario aquí, confiamos en el argumento
+        
         if (!userId) return throwError(() => new Error('No se proveyó userId para dar like'));
         return this.http.post<Publicacion>(`${this.baseUrl}/${id}/like`, { userId: userId });
     }
 
-    // ✅ MODIFICADO: Aceptar 'userId' como argumento
+
     quitarLike(id: string, userId: string): Observable<Publicacion> {
-        // Ya no buscamos al usuario aquí, confiamos en el argumento
+
         if (!userId) return throwError(() => new Error('No se proveyó userId para quitar like'));
         return this.http.delete<Publicacion>(`${this.baseUrl}/${id}/like?userId=${userId}`);
     }
@@ -79,12 +81,45 @@ export class PublicacionesService {
     }
 
 
-    actualizarPublicacion(id: string, data: { titulo: string; mensaje: string }): Observable<Publicacion> {
+    actualizarPublicacion(id: string, data: { titulo: string; mensaje: string }, file: File | null): Observable<Publicacion> {
         const user = this.authService.getUsuarioLogueado();
         if (!user) return throwError(() => new Error('Usuario no logueado'));
+        const formData = new FormData();
         
-        const body = { ...data, userId: user._id || user.id };
-        
-        return this.http.put<Publicacion>(`${this.baseUrl}/${id}`, body);
+        formData.append('usuarioId', user._id || user.id); 
+        formData.append('titulo', data.titulo);
+        formData.append('mensaje', data.mensaje);
+
+        if (file) {
+            formData.append('imagen', file, file.name);
+        }
+
+        return this.http.put<Publicacion>(`${this.baseUrl}/${id}`, formData);
+    }
+
+    getPublicacionPorId(id: string): Observable<Publicacion> {
+        return this.http.get<Publicacion>(`${this.baseUrl}/${id}`);
+    }
+
+
+    getComentarios(publicacionId: string, limit: number, offset: number): Observable<Comentario[]> {
+        return this.http.get<Comentario[]>(
+            `${this.comentariosUrl}/publicacion/${publicacionId}?limit=${limit}&offset=${offset}`
+        );
+    }
+
+    crearComentario(publicacionId: string, texto: string): Observable<Comentario> {
+        return this.http.post<Comentario>(this.comentariosUrl, {
+            publicacionId,
+            texto,
+        });
+    
+    }
+
+    editarComentario(comentarioId: string, texto: string): Observable<Comentario> {
+        return this.http.put<Comentario>(`${this.comentariosUrl}/${comentarioId}`, {
+            texto,
+        });
+        // El interceptor añade el token para la validación de permisos
     }
 }

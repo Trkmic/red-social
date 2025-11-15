@@ -174,4 +174,15 @@ export class PublicacionesService {
         return this.publicacionModel.findByIdAndUpdate(id, data, { new: true });
     }
 
+    async obtenerPorId(id: string) {
+      const publicacion = await this.publicacionModel
+        .findById(id)
+        .populate('usuarioId', 'nombreUsuario imagenPerfil'); // Trae los datos del autor
+
+      if (!publicacion) {
+        throw new NotFoundException('Publicación no encontrada');
+      }
+      return publicacion;
+    }
+
 }
