@@ -18,12 +18,13 @@ import { CloudinaryService } from '../cloudinary/cloudinary.service';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET') || 'SECRET_KEY',
-        signOptions: { expiresIn: '7d' },
+        signOptions: { expiresIn: '15m' },
       }),
       inject: [ConfigService],
     }),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, CloudinaryService],
+  exports: [MongooseModule]
 })
 export class AuthModule {}

@@ -2,14 +2,13 @@
   <div class="feed-container">
     <h2 class="feed-title mb-4 text-center">Postea</h2>
 
-    <!-- 🟢 Formulario nueva publicación (con tus contadores) -->
     <form [formGroup]="formPublicacion" (ngSubmit)="crearPublicacion()" class="new-post-form mb-4">
       <input formControlName="titulo" type="text" class="form-control" placeholder="Título" maxlength="50" #tituloInput>
-      <!-- Conservamos tu contador -->
+
       <small> {{tituloInput.value.length}}/50 </small>
 
       <textarea formControlName="mensaje" class="form-control" placeholder="Mensaje" maxlength="100" #mensajeInput></textarea>
-      <!-- Conservamos tu contador -->
+
       <small> {{mensajeInput.value.length}}/100 </small>
 
       <input type="file" (change)="onFileChange($event)" class="form-control">
@@ -40,7 +39,6 @@
       
       <div *ngFor="let pub of publicaciones">
 
-        <!-- MODO VISTA -->
         <ng-container *ngIf="idPostEditando !== pub._id">
           <div class="mini-post text-start mb-5">
             <div class="d-flex align-items-center gap-3 mb-2">
@@ -48,7 +46,6 @@
               <strong>{{ pub.usuarioId.nombreUsuario | MayusculaLetra }}</strong>
             </div>
 
-            <!-- 1. TÍTULO CLICKEABLE (CORREGIDO) -->
             <a [routerLink]="['/publicacion', pub._id]" class="text-decoration-none text-dark">
               <h5 class="fw-bold mb-1">{{ pub.titulo | MayusculaLetra }}</h5>
             </a>
@@ -62,8 +59,6 @@
                 ❤️ {{ pub.likes.length || 0 }}
               </button>
               
-              <!-- 2. BOTÓN COMENTAR (CORREGIDO) -->
-              <!-- Debe ser un 'a' (enlace) para ir a la página de detalle -->
               <a [routerLink]="['/publicacion', pub._id]" class="btn btn-outline-secondary btn-sm">
                 💬 Comentar
               </a>
@@ -86,8 +81,6 @@
           </div>
         </ng-container>
 
-
-        <!-- MODO EDICIÓN (Sin cambios) -->
         <ng-container *ngIf="idPostEditando === pub._id">
           <div class="mini-post text-start mb-5 p-3 border rounded shadow-sm">
             <h5 class="fw-bold mb-3">Editando Publicación...</h5>

@@ -7,7 +7,7 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/login/login').then(m => m.Login)
     },
     {
-        path: 'publicacion/:id', // Ruta para el detalle
+        path: 'publicacion/:id',
         canActivate: [AuthGuard],
         loadComponent: () => import('./pages/publicacion-detalle/publicacion-detalle').then(m => m.PublicacionDetalle)
     },

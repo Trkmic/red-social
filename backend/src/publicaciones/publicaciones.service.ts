@@ -9,7 +9,7 @@ export class PublicacionesService {
     constructor(
         @InjectModel(Publicacion.name)
         private readonly publicacionModel: Model<Publicacion>,
-        @InjectModel(User.name) // 2. INYECTAR EL MODELO USER
+        @InjectModel(User.name) 
         private readonly userModel: Model<User>,
       ) {}
 
@@ -147,7 +147,6 @@ export class PublicacionesService {
       
           return publicaciones;
         } catch (error: any) {
-          console.error(' Error en obtenerPorUsuario:', error);
           throw new HttpException(
             'Error interno al obtener publicaciones del usuario: ' + error.message,
             HttpStatus.INTERNAL_SERVER_ERROR,
@@ -157,32 +156,27 @@ export class PublicacionesService {
 
       async actualizar(id: string, userId: string, data: { titulo?: string; mensaje?: string }) {
         
-        // A. Buscar el usuario que hace la petición
         const user = await this.userModel.findById(userId);
         if (!user) {
             throw new UnauthorizedException('Usuario no válido');
         }
 
-        // B. Buscar la publicación
         const publicacion = await this.publicacionModel.findById(id);
         if (!publicacion) {
             throw new NotFoundException('Publicación no encontrada');
         }
 
-        
-        // D. Actualizar y devolver
         return this.publicacionModel.findByIdAndUpdate(id, data, { new: true });
     }
 
     async obtenerPorId(id: string) {
       const publicacion = await this.publicacionModel
         .findById(id)
-        .populate('usuarioId', 'nombreUsuario imagenPerfil'); // Trae los datos del autor
+        .populate('usuarioId', 'nombreUsuario imagenPerfil'); 
 
       if (!publicacion) {
         throw new NotFoundException('Publicación no encontrada');
       }
       return publicacion;
     }
-
 }

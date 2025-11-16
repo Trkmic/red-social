@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common'; // 1. IMPORTAR DatePipe
+import { CommonModule, DatePipe } from '@angular/common'; 
 import { AuthService } from '../../core/services/auth.service';
 import {PublicacionesService,Publicacion} from '../../core/services/publicaciones.service';
 import { Types } from 'mongoose';
@@ -24,7 +24,7 @@ interface PublicacionPoblada {
 @Component({
   selector: 'app-mi-perfil',
   standalone: true,
-  imports: [CommonModule, DatePipe, ReactiveFormsModule], // 2. AÑADIR DatePipe a los imports
+  imports: [CommonModule, DatePipe, ReactiveFormsModule], 
   templateUrl: './mi-perfil.html',
   styleUrls: ['./mi-perfil.css'],
 })
@@ -32,9 +32,9 @@ export class MiPerfil implements OnInit {
   usuario: {
     _id: string;
     nombreUsuario: string;
-    nombre?: string; // 3. AÑADIDO
-    apellido?: string; // 4. AÑADIDO
-    fechaNacimiento?: string; // 5. AÑADIDO
+    nombre?: string; 
+    apellido?: string; 
+    fechaNacimiento?: string; 
     descripcion?: string;
     imagenPerfil?: string;
   } | null = null;
@@ -51,7 +51,6 @@ export class MiPerfil implements OnInit {
     private fb: FormBuilder 
   ) {
     
-    // === 6. INICIALIZAR EL FORMULARIO ===
     this.formPerfil = this.fb.group({
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
@@ -73,9 +72,9 @@ export class MiPerfil implements OnInit {
           nombreUsuario: userFromServer.nombreUsuario,
           descripcion: userFromServer.descripcion,
           imagenPerfil: userFromServer.imagenPerfil,
-          nombre: userFromServer.nombre, // 6. AÑADIDO
-          apellido: userFromServer.apellido, // 7. AÑADIDO
-          fechaNacimiento: userFromServer.fechaNacimiento, // 8. AÑADIDO
+          nombre: userFromServer.nombre, 
+          apellido: userFromServer.apellido, 
+          fechaNacimiento: userFromServer.fechaNacimiento, 
         };
 
         this.formPerfil.patchValue({
@@ -88,7 +87,7 @@ export class MiPerfil implements OnInit {
     });
 
     const userId = storedUser._id || storedUser.id;
-    console.log('🧍 ID del usuario logueado:', userId);
+
     this.publicacionesService.getPublicacionesUsuario(userId, 3).subscribe({
       next: (res: Publicacion[]) => {
         this.publicaciones = res.map((pub) => ({
@@ -121,30 +120,25 @@ export class MiPerfil implements OnInit {
 
   guardarPerfil(): void {
     if (this.formPerfil.invalid) {
-      // ... (error)
       return;
     }
     if (!this.usuario) return;
 
     const data = this.formPerfil.value;
 
-    // 3. PASAR EL ARCHIVO SELECCIONADO AL SERVICIO
     this.authService.actualizarUsuario(this.usuario._id, data, this.selectedFile).subscribe({
       next: (usuarioActualizado) => {
         this.usuario = { ...this.usuario, ...usuarioActualizado }; 
         this.editando = false;
-        this.selectedFile = null; // 4. Limpiar el archivo
+        this.selectedFile = null;
         Swal.fire('¡Éxito!', 'Tu perfil ha sido actualizado.', 'success');
-      },
-      error: (err) => {
-        // ... (error)
       }
     });
   }
 
   cancelarEdicion(): void {
     this.editando = false;
-    this.selectedFile = null; // 5. Limpiar el archivo
+    this.selectedFile = null; 
     if (this.usuario) {
       this.formPerfil.patchValue(this.usuario);
     }

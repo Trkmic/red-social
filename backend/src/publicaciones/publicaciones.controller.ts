@@ -63,10 +63,10 @@ export class PublicacionesController {
     @Put(':id')
     async actualizar(
         @Param('id') id: string,
-        @Body() data: any, // data ya incluye { titulo, mensaje, userId } desde el frontend
+        @Body() data: any, 
     ) {
-        const { userId, ...updateData } = data; // Separamos el userId del resto de los datos
-        // Pasamos el ID del post, el ID del usuario (para validación) y los datos a actualizar
+        const { userId, ...updateData } = data;
+
         return this.publicacionesService.actualizar(id, userId, updateData);
     }
 

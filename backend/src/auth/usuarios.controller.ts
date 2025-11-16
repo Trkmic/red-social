@@ -26,21 +26,17 @@ export class UsuariosController {
     @UseInterceptors(FileInterceptor('imagenPerfil', { storage: memoryStorage() }))
     async actualizarUsuario(
         @Param('id') id: string,
-        @UploadedFile() file: Express.Multer.File, // 5. Recibir el archivo
-        @Body() data: any, // { nombre, apellido, descripcion }
+        @UploadedFile() file: Express.Multer.File, 
+        @Body() data: any, 
     ) {
         
-        // 6. Si se sube un archivo nuevo...
         if (file) {
             try {
                 const imageUrl = await this.cloudinaryService.uploadImage(file, 'usuarios');
-                data.imagenPerfil = imageUrl; // 7. Añadir la nueva URL a los datos
+                data.imagenPerfil = imageUrl; 
             } catch (error) {
-                console.error('Error al subir imagen a Cloudinary:', error);
-                // Opcional: manejar el error si la subida falla
             }
         }
-        // 8. Actualizar la DB con los datos (incluyendo la nueva imagenPerfil si existe)
         const userUpdated = await this.userModel.findByIdAndUpdate(id, data, { new: true }).select('-password');
         
         if (!userUpdated) {

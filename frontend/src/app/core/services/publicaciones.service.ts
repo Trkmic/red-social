@@ -53,8 +53,6 @@ export class PublicacionesService {
         const userId = user._id || user.id; 
         data.append('usuarioId', userId);
 
-        console.log('📤 Creando publicación con usuarioId:', userId);
-
         return this.http.post<Publicacion>(this.baseUrl, data);
     }
 
@@ -120,6 +118,5 @@ export class PublicacionesService {
         return this.http.put<Comentario>(`${this.comentariosUrl}/${comentarioId}`, {
             texto,
         });
-        // El interceptor añade el token para la validación de permisos
     }
 }

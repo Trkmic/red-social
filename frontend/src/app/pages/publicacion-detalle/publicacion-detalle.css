@@ -1,17 +1,15 @@
 .comentario-item {
     border-bottom: 1px solid #eee;
     padding-bottom: 0.75rem;
-  }
+}
   .comentario-item:last-child {
     border-bottom: 0;
-  }
-  
-  /* Estilos para que el botón de editar parezca un link */
-  .btn-link {
+}
+.btn-link {
     font-weight: normal;
     color: #6c757d;
     text-decoration: underline;
-  }
-  .btn-link:hover {
+}
+.btn-link:hover {
     color: #000;
-  }
+}

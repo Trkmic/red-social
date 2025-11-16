@@ -1,13 +1,13 @@
 .footer {
     font-size: 0.9rem;
-    background: rgba(255, 255, 255, 0.15); /* semi-transparente */
-    backdrop-filter: blur(10px);            /* efecto glassmorphism */
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);          
     border-top: 1px solid rgba(255, 255, 255, 0.3);
     box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.1);
     padding: 0.75rem 1rem;
-    color: #fff; /* texto blanco para resaltar sobre fondo animado */
+    color: #fff; 
     width: 100%;
-    position: relative; /* para que siempre se quede abajo con mt-auto en flex column */
+    position: relative; 
     z-index: 5;
 }
 

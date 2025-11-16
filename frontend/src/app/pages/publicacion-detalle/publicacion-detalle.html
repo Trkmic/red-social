@@ -15,6 +15,7 @@
   
             <!-- Título -->
             <h2 class="fw-bold mb-2">{{ publicacion.titulo | MayusculaLetra }}</h2>
+            
             <!-- Fecha -->
             <small class="text-muted d-block mb-3">📅 {{ publicacion.createdAt | FormateoHora }}</small>
             
@@ -28,11 +29,11 @@
   
           <hr class="my-0">
   
-          <!-- Sección de Comentarios -->
+          <!-- Comentarios -->
           <div class="card-body p-4">
             <h4 class="fw-semibold mb-3"> Escribe un comentario 👇</h4>
   
-            <!-- Formulario para Nuevo Comentario -->
+            <!-- Nuevo Comentario -->
             <form [formGroup]="formComentario" (ngSubmit)="enviarComentario()" class="mb-4">
               <div class="mb-2">
                 <textarea formControlName="texto" class="form-control" rows="3" placeholder="Escribe un comentario..." #Comentario maxlength="50"></textarea>
@@ -45,6 +46,7 @@
             </form>
   
             <h4 class="fw-semibold mb-3">Comentarios 💬</h4>
+
             <!-- Lista de Comentarios -->
             <div *ngIf="comentarios.length > 0; else sinComentarios">
               
@@ -53,7 +55,7 @@
                   <img [src]="comentario.usuarioId?.imagenPerfil || '/icons/14.png'" alt="User" class="rounded-circle mt-1" width="35" height="35">
                   <div class="flex-grow-1">
   
-                    <!-- MODO VISTA (Default) -->
+                    <!-- (Default) -->
                     <div *ngIf="editandoComentarioId !== comentario._id">
                       <strong>{{ comentario.usuarioId?.nombreUsuario }}</strong>
                       <small class="text-muted ms-2">{{ comentario.createdAt | FormateoHora }}</small>
@@ -61,13 +63,13 @@
                       
                       <p class="mb-1">{{ comentario.texto }}</p>
   
-                      <!-- Botones de Acción (solo para el dueño) -->
+                      <!-- (solo para el dueño) -->
                       <div *ngIf="usuarioLogueado?._id === comentario.usuarioId?._id">
                         <button (click)="iniciarEdicion(comentario)" class="btn btn-link btn-sm p-0">Editar</button>
                       </div>
                     </div>
   
-                    <!-- MODO EDICIÓN -->
+                    <!-- EDICIÓN -->
                     <div *ngIf="editandoComentarioId === comentario._id">
                       <form [formGroup]="formEditarComentario" (ngSubmit)="guardarEdicionComentario(comentario._id)">
                         <textarea formControlName="texto" class="form-control form-control-sm mb-2" #ComentarioEditado maxlength="50"></textarea>
@@ -99,7 +101,7 @@
           </div>
         </div>
   
-        <!-- Template si no se encuentra la publicación -->
+        <!-- no se encuentra la publicación -->
         <ng-template #noEncontrado>
           <div class="alert alert-danger text-center">
             <h4 class="alert-heading">Publicación no encontrada</h4>

@@ -14,18 +14,16 @@ import { CommonModule } from '@angular/common';
 export class App {
   protected readonly title = signal('red-social');
 
-  isLoading = true; // Controla la pantalla de carga
+  isLoading = true; 
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  // 8. IMPLEMENTAR ngOnInit
   ngOnInit(): void {
-    // Al iniciar el componente, validamos el token
+    // valida el token
     this.authService.checkTokenValidity().subscribe((isValid) => {
-      // 9. Cuando la validación termina, ocultamos el spinner
+
       this.isLoading = false;
 
-      // 10. Redirigimos según el resultado
       if (isValid) {
         this.router.navigate(['/publicaciones']);
       } else {

@@ -14,9 +14,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(payload: any) {
-        // El 'payload' es el objeto de usuario que guardaste en el token al hacer login
+        // El payload es el objeto de usuario guardado en el token
         return { 
-            _id: payload._id, 
+            _id: payload.sub, 
             nombreUsuario: payload.nombreUsuario, 
             email: payload.email,
             rol: payload.rol 

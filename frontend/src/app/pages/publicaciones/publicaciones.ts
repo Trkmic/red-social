@@ -27,14 +27,13 @@ export class Publicaciones implements OnInit {
   environment = environment;
   ordenActual: 'fecha' | 'likes' = 'fecha';
   
-  // ✅ 1. PROPIEDAD AÑADIDA
   userId: string | null = null; 
   isAdmin = false;
 
-  formEditarPost: FormGroup; // Formulario para EDITAR
-  idPostEditando: string | null = null; // ID del post que estamos editando
-  selectedFileEdit: File | null = null; // Archivo para el post que estamos editando
-  loadingEdit = false; // Loading para el botón de guardar edición
+  formEditarPost: FormGroup;
+  idPostEditando: string | null = null; 
+  selectedFileEdit: File | null = null; 
+  loadingEdit = false; 
 
 
   constructor(
@@ -56,7 +55,6 @@ export class Publicaciones implements OnInit {
     });
   }
 
-  // ✅ 2. FUNCIÓN ngOnInit REEMPLAZADA
   ngOnInit(): void {
     setTimeout(() => {
       this.usuarioLogueado = this.authService.getUsuarioLogueado();
@@ -89,10 +87,9 @@ export class Publicaciones implements OnInit {
     this.cargarPublicaciones();
   }
 
-  // ✅ 3. FUNCIÓN toggleLike REEMPLAZADA
+
   toggleLike(pub: Publicacion) {
     if (!this.userId) {
-      console.error('Usuario no logueado, no se puede dar like');
       return;
     }
   
@@ -103,37 +100,29 @@ export class Publicaciones implements OnInit {
     let obs;
   
     if (liked) {
-      // Quitar like (optimista)
+
       this.publicaciones[index].likes = this.publicaciones[index].likes.filter(id => id !== this.userId);
-      // ✅ PASAMOS EL userId
       obs = this.pubService.quitarLike(pub._id, this.userId);
-      console.log('UI actualizada (like quitado). Llamando a backend...');
-  
+
     } else {
-      // Dar like (optimista)
+
       this.publicaciones[index].likes.push(this.userId);
-      // ✅ PASAMOS EL userId
       obs = this.pubService.darLike(pub._id, this.userId);
-      console.log('UI actualizada (like agregado). Llamando a backend...');
     }
   
     obs.subscribe({
       next: (backendPub) => {
-        console.log('Respuesta del backend (re-sincronizando):', backendPub);
         this.publicaciones[index] = {
           ...backendPub,
           likes: backendPub.likes?.map(l => l.toString()) || []
         };
       },
       error: (err) => {
-        console.error('Error del backend, revirtiendo UI', err);
-        // Si falla, recargamos todo para asegurar consistencia
         this.cargarPublicaciones(); 
       }
     });
   }
 
-  // ✅ 4. FUNCIÓN yaLeDioLike REEMPLAZADA
   yaLeDioLike(pub: Publicacion): boolean {
     if (!this.userId) {
       return false;
@@ -193,7 +182,6 @@ export class Publicaciones implements OnInit {
             Swal.fire('Eliminada', 'La publicación fue eliminada con éxito.', 'success');
           },
           error: (err) => {
-            console.error('Error al eliminar:', err);
             Swal.fire('Error', 'Ocurrió un problema al eliminar la publicación.', 'error');
           }
         });
@@ -209,10 +197,9 @@ export class Publicaciones implements OnInit {
   }
 
   editarPublicacion(pub: Publicacion): void {
-    this.idPostEditando = pub._id; // Marcamos este post como "editando"
-    this.selectedFileEdit = null; // Limpiamos el archivo anterior
+    this.idPostEditando = pub._id; 
+    this.selectedFileEdit = null; 
     
-    // Rellenamos el formulario de edición con los datos actuales
     this.formEditarPost.patchValue({
       titulo: pub.titulo,
       mensaje: pub.mensaje
@@ -230,20 +217,18 @@ export class Publicaciones implements OnInit {
     }
     this.loadingEdit = true;
 
-    const data = this.formEditarPost.value; // { titulo, mensaje }
+    const data = this.formEditarPost.value; 
 
-    // Llamamos al servicio (que ahora modificaremos para que acepte un archivo)
     this.pubService.actualizarPublicacion(this.idPostEditando, data, this.selectedFileEdit).subscribe({
       next: () => {
         this.loadingEdit = false;
-        this.idPostEditando = null; // Salimos del modo edición
+        this.idPostEditando = null; 
         this.selectedFileEdit = null;
-        this.cargarPublicaciones(); // Recargamos todo
+        this.cargarPublicaciones();
         Swal.fire('¡Actualizado!', 'Publicación modificada.', 'success');
       },
       error: (err) => {
         this.loadingEdit = false;
-        console.error('Error al actualizar:', err);
         Swal.fire('Error', 'No se pudo actualizar la publicación.', 'error');
       }
     });

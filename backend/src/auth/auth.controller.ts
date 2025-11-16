@@ -1,15 +1,4 @@
-import { 
-    Controller, 
-    Post, 
-    Body, 
-    UploadedFile, 
-    UseInterceptors, 
-    HttpCode, 
-    HttpStatus, 
-    HttpException,
-    UseGuards,
-    Request    
-} from '@nestjs/common';
+import { Controller, Post, Body, UploadedFile, UseInterceptors, HttpCode, HttpStatus, HttpException,UseGuards,Request} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { AuthService } from './auth.service';
@@ -19,6 +8,8 @@ import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { JwtAuthGuard } from './jwt/jwt-auth.guard'; 
+
+
 
 @Controller('auth')
 export class AuthController {
@@ -54,20 +45,24 @@ export class AuthController {
     }
     
     @Post('refresh')
-    @UseGuards(JwtAuthGuard) // Protege la ruta, usa la JwtStrategy
+    @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.OK)
     async refreshToken(@Request() req: any) {
-        // 'req.user' es el objeto 'payload' que devolvimos en jwt.strategy.ts
-        const user = req.user; 
+        // req.user payload decodificado
+        const payload = req.user;
 
-        if (!user) {
-            throw new HttpException('Usuario no encontrado en el token', HttpStatus.UNAUTHORIZED);
+        if (!payload) {
+            throw new HttpException('Token inválido', HttpStatus.UNAUTHORIZED);
         }
 
-        // Generamos un nuevo token usando la misma información
-        const token = await this.authService.generateJwt(user);
+        const usuarioParaToken = {
+            _id: payload.sub, 
+            nombreUsuario: payload.nombreUsuario,
+            email: payload.email
+        };
 
-        // Devolvemos el nuevo token al frontend
+        const token = await this.authService.generateJwt(usuarioParaToken as any);
+
         return {
             message: 'Token refrescado exitosamente',
             token,

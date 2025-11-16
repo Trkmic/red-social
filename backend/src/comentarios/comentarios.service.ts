@@ -11,9 +11,6 @@ export class ComentariosService {
         private readonly comentarioModel: Model<Comentario>,
     ) {}
 
-    /**
-     * Obtiene comentarios para una publicación con paginación
-     */
     async getPorPublicacion(
         publicacionId: string,
         limit: number = 5,
@@ -21,8 +18,8 @@ export class ComentariosService {
     ) {
         return this.comentarioModel
         .find({ publicacionId: new Types.ObjectId(publicacionId) })
-        .populate('usuarioId', 'nombreUsuario imagenPerfil') // Trae los datos del usuario
-        .sort({ createdAt: 1 }) // Ordena del más viejo al más nuevo
+        .populate('usuarioId', 'nombreUsuario imagenPerfil') 
+        .sort({ createdAt: 1 }) 
         .skip(offset)
         .limit(limit)
         .exec();
@@ -32,19 +29,17 @@ export class ComentariosService {
      * Crea un nuevo comentario
      */
     async crear(texto: string, usuarioId: string, publicacionId: string) {
-        const nuevoComentario = new this.comentarioModel({
-        texto,
-        usuarioId: new Types.ObjectId(usuarioId),
-        publicacionId: new Types.ObjectId(publicacionId),
-        });
-        const comentarioGuardado = await nuevoComentario.save();
-        // Populamos el usuario para devolverlo al frontend
-        return this.comentarioModel.findById(comentarioGuardado._id).populate('usuarioId', 'nombreUsuario imagenPerfil');
+                const nuevoComentario = new this.comentarioModel({
+                texto,
+                usuarioId: new Types.ObjectId(usuarioId),
+                publicacionId: new Types.ObjectId(publicacionId),
+                });
+
+                const comentarioGuardado = await nuevoComentario.save();
+
+                return comentarioGuardado.populate('usuarioId', 'nombreUsuario imagenPerfil');
     }
 
-    /**
-     * Edita un comentario existente
-     */
     async editar(comentarioId: string, userId: string, texto: string) {
         const comentario = await this.comentarioModel.findById(comentarioId);
     
@@ -60,7 +55,6 @@ export class ComentariosService {
         comentario.editado = true; 
         await comentario.save();
         
-        // Asegúrate de popular también al editar
         return this.comentarioModel.findById(comentarioId).populate('usuarioId', 'nombreUsuario imagenPerfil');
     }
 }

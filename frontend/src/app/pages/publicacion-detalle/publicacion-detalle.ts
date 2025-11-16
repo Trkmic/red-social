@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute} from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PublicacionesService, Publicacion } from '../../core/services/publicaciones.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -8,7 +8,6 @@ import { FormateoHoraPipe } from '../../core/pipes/formateo_hora.pipe';
 import { MayusculaLetraPipe } from '../../core/pipes/mayuscula_letra.pipe';
 import Swal from 'sweetalert2';
 
-// Definimos la interfaz para los comentarios
 export interface Comentario {
   _id: string;
   texto: string;
@@ -34,7 +33,9 @@ export interface Comentario {
   templateUrl: './publicacion-detalle.html',
   styleUrls: ['./publicacion-detalle.css'],
 })
+
 export class PublicacionDetalle implements OnInit {
+
   // Servicios
   private route = inject(ActivatedRoute);
   private pubService = inject(PublicacionesService);
@@ -72,14 +73,14 @@ export class PublicacionDetalle implements OnInit {
     const publicacionId = this.route.snapshot.paramMap.get('id');
 
     if (publicacionId) {
-      // 1. Cargar la publicación
+
       this.pubService.getPublicacionPorId(publicacionId).subscribe({
         next: (pub) => {
           this.publicacion = pub;
-          // 2. Cargar la primera tanda de comentarios
+
           this.cargarComentarios();
         },
-        error: () => this.publicacion = null, // Manejar error
+        error: () => this.publicacion = null, 
       });
     }
   }
@@ -90,13 +91,11 @@ export class PublicacionDetalle implements OnInit {
     this.pubService
       .getComentarios(this.publicacion._id, this.limitComentarios, this.offsetComentarios)
       .subscribe((nuevosComentarios) => {
-        // Añadimos los nuevos comentarios al array existente
+
         this.comentarios = [...this.comentarios, ...nuevosComentarios];
         
-        // Actualizamos el offset para la próxima carga
         this.offsetComentarios += nuevosComentarios.length;
         
-        // Si la tanda fue menor al límite, ya no hay más
         if (nuevosComentarios.length < this.limitComentarios) {
           this.hayMasComentarios = false;
         }
@@ -108,7 +107,6 @@ export class PublicacionDetalle implements OnInit {
 
     const texto = this.formComentario.value.texto;
     
-    // --- UI OPTIMISTA ---
     const comentarioOptimista: Comentario = {
       _id: 'temp-' + Date.now(),
       texto: texto,
@@ -133,14 +131,12 @@ export class PublicacionDetalle implements OnInit {
         }
       },
       error: (err) => {
-        console.error("Error al guardar comentario:", err);
         this.comentarios = this.comentarios.filter(c => c._id !== comentarioOptimista._id);
         Swal.fire('Error', 'No se pudo enviar el comentario.', 'error');
       }
     });
   }
 
-  // --- Lógica de Edición de Comentarios ---
 
   iniciarEdicion(comentario: Comentario): void {
     if (comentario._id.startsWith('temp-')) return;

@@ -1,15 +1,12 @@
-import { Controller, Get, Post, Put, Param, Query, Body, UseGuards, Request, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Param, Query, Body, UseGuards, Request, ParseIntPipe, DefaultValuePipe, HttpException, HttpStatus } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { ComentariosService } from './comentarios.service';
+
 
 @Controller('comentarios')
 export class ComentariosController {
     constructor(private readonly comentariosService: ComentariosService) {}
 
-    /**
-     * Obtener comentarios paginados de una publicación
-     * GET /comentarios/publicacion/ID_PUBLICACION?limit=5&offset=0
-     */
     @Get('publicacion/:id')
     async getPorPublicacion(
         @Param('id') publicacionId: string,
@@ -19,10 +16,6 @@ export class ComentariosController {
         return this.comentariosService.getPorPublicacion(publicacionId, limit, offset);
     }
 
-    /**
-     * Crear un nuevo comentario
-     * POST /comentarios
-     */
     @UseGuards(JwtAuthGuard)
     @Post()
     async crear(
@@ -30,14 +23,15 @@ export class ComentariosController {
         @Body('texto') texto: string,
         @Body('publicacionId') publicacionId: string,
     ) {
-        const userId = req.user._id; // Obtenido del token (JwtAuthGuard)
+        const userId = req.user._id; 
+        
+        if (!userId) {
+            throw new HttpException('ID de usuario no encontrado en el token', HttpStatus.UNAUTHORIZED);
+        }
+
         return this.comentariosService.crear(texto, userId, publicacionId);
     }
 
-    /**
-     * Editar un comentario
-     * PUT /comentarios/ID_COMENTARIO
-     */
     @UseGuards(JwtAuthGuard)
     @Put(':id')
     async editar(
