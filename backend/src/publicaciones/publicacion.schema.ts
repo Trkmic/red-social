@@ -20,3 +20,4 @@ export class Publicacion extends Document {
 }
 
 export const PublicacionSchema = SchemaFactory.createForClass(Publicacion);
+export type PublicacionDocument = Publicacion & Document;

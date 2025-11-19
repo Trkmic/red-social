@@ -19,3 +19,4 @@ export class Comentario extends Document {
 }
 
 export const ComentarioSchema = SchemaFactory.createForClass(Comentario);
+export type ComentarioDocument = Comentario & Document;

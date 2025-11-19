@@ -1,0 +1,114 @@
+<div class="container mt-4">
+    <h2 class="mb-4">Dashboard de Estadísticas</h2>
+
+    <div class="card p-3 mb-4 shadow-sm">
+        <div class="row align-items-end">
+            <div class="col-md-5">
+                <label for="fechaInicio" class="form-label">Fecha de Inicio:</label>
+                <input type="date" class="form-control" id="fechaInicio" [(ngModel)]="fechaInicio">
+            </div>
+            <div class="col-md-5">
+                <label for="fechaFin" class="form-label">Fecha de Fin:</label>
+                <input type="date" class="form-control" id="fechaFin" [(ngModel)]="fechaFin">
+            </div>
+            <div class="col-md-2 mt-3 mt-md-0">
+                <button class="btn btn-primary w-100" (click)="cargarEstadisticas()">
+                    Actualizar Gráficos
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card p-3 shadow-sm h-100">
+                <h5 class="card-title text-center">Publicaciones por Usuario</h5>
+                <div class="chart-container">
+                    <canvas baseChart
+                        [data]="pieChartData"
+                        [options]="pieChartOptions"
+                        [type]="pieChartType">
+                    </canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8 mb-4">
+            <div class="card p-3 shadow-sm h-100">
+                <h5 class="card-title text-center">Cantidad de Comentarios Totales Diarios</h5>
+                <div class="chart-container-lg">
+                    <canvas baseChart
+                        [data]="lineChartData"
+                        [options]="lineChartOptions"
+                        [type]="lineChartType">
+                    </canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 mb-4">
+            <div class="card p-3 shadow-sm">
+                <h5 class="card-title text-center">Comentarios por Publicación</h5>
+                <div class="chart-container-xl">
+                    <canvas baseChart
+                        [data]="barChartData"
+                        [options]="barChartOptions"
+                        [type]="barChartType">
+                    </canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mt-4">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    </div>
+        
+                <div class="col-md-8 mb-4">
+                    </div>
+        
+                <div class="col-md-6 mb-4">
+                    <div class="card p-3 shadow-sm h-100">
+                        <h5 class="card-title text-center">Cantidad de Ingresos por Usuario</h5>
+                        <div class="chart-container-lg">
+                            <canvas baseChart
+                                [data]="loginsBarChartData"
+                                [options]="loginsBarChartOptions"
+                                [type]="loginsBarChartType">
+                            </canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="card p-3 shadow-sm h-100">
+                        <h5 class="card-title text-center">Me Gusta Otorgados por Día </h5>
+                        <div class="chart-container-lg">
+                            <canvas baseChart
+                                [data]="likesLineChartData"
+                                [options]="likesLineChartOptions"
+                                [type]="likesLineChartType">
+                            </canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 mb-4">
+                    <div class="card p-3 shadow-sm">
+                        <h5 class="card-title text-center">Visitas a Perfil de Usuarios </h5>
+                        <div class="chart-container-xl">
+                            <canvas baseChart
+                                [data]="profileViewsLineChartData"
+                                [options]="profileViewsLineChartOptions"
+                                [type]="profileViewsLineChartType">
+                            </canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-12 mb-4">
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>

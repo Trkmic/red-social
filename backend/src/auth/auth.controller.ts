@@ -8,26 +8,31 @@ import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { JwtAuthGuard } from './jwt/jwt-auth.guard'; 
-
-
+import { LogsService } from '../logs/logs.service';
+import { Document} from 'mongoose';
+import { UserDocument } from './user.schema';
 
 @Controller('auth')
-export class AuthController {
+export class AuthController{
+
     constructor(
         private readonly authService: AuthService,
         private readonly cloudinaryService: CloudinaryService,
+        private readonly logsService: LogsService
     ) {}
 
     @Post('login')
     @HttpCode(HttpStatus.OK)
     async login(@Body() dto: LoginAuthDto) {
-    const user = await this.authService.validateUser(dto.emailOrUsername, dto.password);
+        const user = await this.authService.validateUser(dto.emailOrUsername, dto.password) as UserDocument;
 
     if (!user) {
         throw new HttpException('Usuario o contraseña incorrectos', HttpStatus.UNAUTHORIZED);
     }
 
     const token = await this.authService.generateJwt(user);
+
+    await this.logsService.logLogin(user._id.toString());
 
     return {
             message: 'Login exitoso',

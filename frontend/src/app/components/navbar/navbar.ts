@@ -13,7 +13,9 @@ export class Navbar {
   showPublicaciones = false;
   showMiPerfil = false;
   showSalir = false;
-
+  showDashboardUsuarios = false;
+  showDashboardEstadisticas = false;
+  
   constructor(private router: Router, private auth: AuthService) { 
 
     this.router.events.subscribe(event => {
@@ -23,6 +25,7 @@ export class Navbar {
         this.showPublicaciones = false;
         this.showMiPerfil = false;
         this.showSalir = false;
+        this.showDashboardEstadisticas = false;
 
         if (url.includes('/publicaciones')) {
           this.showMiPerfil = true;
@@ -33,7 +36,19 @@ export class Navbar {
         }else if (url.startsWith('/publicacion/')) {
           this.showPublicaciones = true;
           this.showSalir = true;
+      }else if (url.startsWith('/dashboard')) {
+        this.showPublicaciones = true;
+        this.showSalir = true;
       }
+
+      const loggedIn = this.auth.isLoggedIn();
+      this.showSalir = loggedIn;
+
+      if (loggedIn && this.auth.esAdministrador()) {
+            this.showDashboardUsuarios = !url.includes('/dashboard/usuarios');
+            this.showDashboardEstadisticas = !url.includes('/dashboard/estadisticas');
+        }
+      
       }
     });
   }

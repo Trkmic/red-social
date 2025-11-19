@@ -1,0 +1,17 @@
+.chart-container {
+    height: 300px; 
+    width: 100%;
+    margin: auto;
+}
+
+.chart-container-lg {
+    position: relative;
+    height: 400px; 
+    width: 100%;
+}
+
+.chart-container-xl {
+    position: relative;
+    height: 500px;
+    width: 100%;
+}

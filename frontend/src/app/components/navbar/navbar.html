@@ -8,6 +8,12 @@
     
         <!-- Botones dinámicos -->
         <div class="nav-right d-flex align-items-center gap-2">
+            <button *ngIf="showDashboardEstadisticas" class="btn btn-outline-info" (click)="navegador('dashboard/estadisticas')">
+                Estadísticas Admin
+            </button>
+            <button *ngIf="showDashboardUsuarios" class="btn btn-outline-warning" (click)="navegador('dashboard/usuarios')">
+                Usuarios Admin
+            </button>
             <button *ngIf="showPublicaciones" class="btn btn-outline-primary" (click)="navegador('publicaciones')">
             Publicaciones
             </button>
