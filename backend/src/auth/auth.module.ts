@@ -4,10 +4,11 @@ import { AuthController } from './auth.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './user.schema';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt/jwt';
-import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { UsuariosController } from './usuarios.controller'; 
+import { AdminGuard } from './admin.guard'; 
+import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -22,9 +23,12 @@ import { CloudinaryService } from '../cloudinary/cloudinary.service';
       }),
       inject: [ConfigService],
     }),
+    CloudinaryModule, // <<-- Importamos el módulo que provee CloudinaryService
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, CloudinaryService],
-  exports: [MongooseModule]
+  // Eliminamos CloudinaryService de providers, ya que viene de CloudinaryModule
+  providers: [AuthService, JwtStrategy], 
+  // Exportamos AuthService para que UsuariosModule pueda usarlo
+  exports: [MongooseModule, AuthService] 
 })
 export class AuthModule {}

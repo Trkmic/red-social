@@ -29,6 +29,9 @@ export class User {
     @Prop({ default: 'usuario' })
     perfil: 'usuario' | 'administrador';
 
+    @Prop({ default: true })
+    habilitado: boolean;
+
     @Prop()
     imagenPerfil?: string;
 }
@@ -44,5 +47,6 @@ export interface IUser {
     fechaNacimiento: string;
     descripcion: string;
     perfil: 'usuario' | 'administrador';
+    habilitado: boolean;
     imagenPerfil?: string;
 }

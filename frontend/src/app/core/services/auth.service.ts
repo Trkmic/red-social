@@ -5,6 +5,7 @@ import { Observable, of, Subscription, timer } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2'; 
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -187,6 +188,24 @@ export class AuthService {
         return of(null);
       })
     );
+  }
+
+  public esAdministrador(): boolean {
+    const token = this.getToken();
+    if (!token) {
+        return false;
+    }
+
+    try {
+        // Decodifica el token para obtener el payload
+        const payload: any = jwtDecode(token);
+        
+        // Verifica el campo 'perfil' que añadimos en el backend
+        return payload.perfil === 'administrador';
+    } catch (error) {
+        console.error('Error al decodificar el token:', error);
+        return false;
+    }
   }
 }
 

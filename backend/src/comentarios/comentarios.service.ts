@@ -25,9 +25,6 @@ export class ComentariosService {
         .exec();
     }
 
-    /**
-     * Crea un nuevo comentario
-     */
     async crear(texto: string, usuarioId: string, publicacionId: string) {
                 const nuevoComentario = new this.comentarioModel({
                 texto,

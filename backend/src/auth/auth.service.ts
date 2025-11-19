@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
@@ -14,7 +14,7 @@ export class AuthService {
     ) {}
 
     async generateJwt(user: UserDocument) {
-        const payload = { sub: user._id, nombreUsuario: user.nombreUsuario, email: user.email };
+        const payload = { sub: user._id, nombreUsuario: user.nombreUsuario, email: user.email, perfil: user.perfil };
         return this.jwtService.sign(payload);
     }
 
@@ -30,6 +30,10 @@ export class AuthService {
         
         if (!user) return null;
         
+        if (!user.habilitado) {
+            throw new UnauthorizedException('Su cuenta ha sido deshabilitada. Contacte a un administrador.');
+        }
+
         const passwordValid = await bcrypt.compare(password, user.password);
         if (!passwordValid) return null;
         
@@ -67,6 +71,7 @@ export class AuthService {
             descripcion: dto.descripcion || '',
             perfil: dto.perfil || 'usuario',
             imagenPerfil: imagenUrl || '',
+            habilitado: true,
         });
     
         return await usuario.save();
