@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { PublicacionesService, Publicacion } from '../../core/services/publicaciones.service';
@@ -35,6 +35,16 @@ export class Publicaciones implements OnInit {
   selectedFileEdit: File | null = null; 
   loadingEdit = false; 
 
+  offset: number = 0;
+  readonly limit: number = 10;
+  hasMorePosts: boolean = true; 
+  scrollingLoading: boolean = false; 
+  
+  // ⬇️ HostListener para detectar el scroll de la ventana
+  @HostListener('window:scroll', ['$event'])
+  onScroll(event: Event): void {
+      this.scrollHandler();
+  }
 
   constructor(
     private fb: FormBuilder,
@@ -64,27 +74,75 @@ export class Publicaciones implements OnInit {
         this.isAdmin = true;
       }
 
-      this.cargarPublicaciones();
+      this.cargarPublicaciones(true); 
     }, 100); 
-
   }
 
 
-  cargarPublicaciones(): void {
-    this.pubService.obtenerPublicaciones(this.ordenActual).subscribe({
+  cargarPublicaciones(reset: boolean = false): void {
+    if (reset) {
+        this.offset = 0;
+        this.publicaciones = [];
+        this.hasMorePosts = true;
+        this.loading = true; // Usar loading para la carga inicial
+    }
+
+    if (!this.hasMorePosts || this.scrollingLoading) {
+      // Si no es un reset, salimos si no hay más o está cargando
+      if (!reset) return; 
+  }
+    
+    // Solo usar scrollingLoading si NO es un reset (es scroll infinito)
+    this.scrollingLoading = !reset; 
+    if (this.scrollingLoading) this.loading = false;
+
+    this.pubService.obtenerPublicaciones(this.ordenActual, this.offset, this.limit).subscribe({ 
       next: (data) => {
-        this.publicaciones = data.map(post => ({
+        const newPosts = data.map(post => ({
           ...post,
           likes: post.likes?.map(l => l.toString()) || []
         }));
+        
+        // Concatenar si no es reset
+        this.publicaciones = reset ? newPosts : [...this.publicaciones, ...newPosts]; 
+        
+        this.offset = this.publicaciones.length; // Ajustar offset al total de posts
+        this.hasMorePosts = newPosts.length === this.limit; // Determinar si hay más posts
+        
+        this.loading = false;
+        this.scrollingLoading = false;
       },
+      error: (err) => {
+        this.loading = false;
+        this.scrollingLoading = false;
+        console.error('Error al cargar publicaciones:', err);
+      }
     });
+  }
+
+  scrollHandler(): void {
+    // Si no hay más posts o ya estamos cargando, salir
+    if (!this.hasMorePosts || this.scrollingLoading) {
+        return;
+    }
+
+    // Cálculo de scroll (Usando window.scrollY para reemplazar pageYOffset)
+    const scrollPosition = window.scrollY || document.documentElement.scrollTop;
+    const clientHeight = document.documentElement.clientHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+    
+    // Si el usuario está cerca del final (por ejemplo, a 200px del fondo)
+    const threshold = 200;
+
+    if (scrollPosition + clientHeight >= documentHeight - threshold) {
+        this.cargarPublicaciones(false); // Cargar más, sin reset
+    }
   }
 
   cambiarOrden(nuevoOrden: 'fecha' | 'likes'): void {
     if (this.ordenActual === nuevoOrden) return; 
     this.ordenActual = nuevoOrden;
-    this.cargarPublicaciones();
+    this.cargarPublicaciones(true);
   }
 
 
@@ -118,7 +176,7 @@ export class Publicaciones implements OnInit {
         };
       },
       error: (err) => {
-        this.cargarPublicaciones(); 
+        this.cargarPublicaciones(true); 
       }
     });
   }
@@ -155,7 +213,7 @@ export class Publicaciones implements OnInit {
         this.selectedFile = null;
         const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
         if (fileInput) fileInput.value = '';
-        this.cargarPublicaciones();
+        this.cargarPublicaciones(true);
       },
 
       error: () => this.loading = false
@@ -178,7 +236,16 @@ export class Publicaciones implements OnInit {
       if (result.isConfirmed) {
         this.pubService.eliminarPublicacion(id).subscribe({
           next: () => {
-            this.cargarPublicaciones();
+            // Quitamos el post de la lista
+            this.publicaciones = this.publicaciones.filter(p => p._id !== id);
+            
+            // Si la lista tiene menos posts que el límite, forzamos una recarga para llenar el hueco
+            if (this.publicaciones.length < this.limit) {
+                this.cargarPublicaciones(true);
+            } else {
+                this.offset = this.publicaciones.length; // Ajustar el offset
+            }
+
             Swal.fire('Eliminada', 'La publicación fue eliminada con éxito.', 'success');
           },
           error: (err) => {
@@ -224,7 +291,7 @@ export class Publicaciones implements OnInit {
         this.loadingEdit = false;
         this.idPostEditando = null; 
         this.selectedFileEdit = null;
-        this.cargarPublicaciones();
+        this.cargarPublicaciones(true); // ⬅️ Recargar desde el inicio
         Swal.fire('¡Actualizado!', 'Publicación modificada.', 'success');
       },
       error: (err) => {
@@ -233,5 +300,4 @@ export class Publicaciones implements OnInit {
       }
     });
   }
-
 }

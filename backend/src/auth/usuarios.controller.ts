@@ -13,7 +13,7 @@ import { GetUser } from './jwt/get-user.decorator';
 import { LogsService } from '../logs/logs.service';
 
 @Controller('usuarios')
-@UseGuards(JwtAuthGuard, AdminGuard) // Protege todo el controlador: solo acceso para administradores autenticados
+@UseGuards(JwtAuthGuard) // Protege todo el controlador: solo acceso para administradores autenticados
 export class UsuariosController {
     constructor(
         @InjectModel(User.name) private readonly userModel: Model<UserDocument>, // Se ajusta el tipo a UserDocument
@@ -23,6 +23,7 @@ export class UsuariosController {
     ) {}
     
     // **NUEVO: Ver el listado de los usuarios**
+    @UseGuards(AdminGuard)
     @Get()
     async getAllUsuarios() {
         const users = await this.userModel.find().select('-password');
@@ -44,6 +45,7 @@ export class UsuariosController {
     }
 
     // **NUEVO: Formulario de registro para nuevos usuarios (creado por administrador)**
+    @UseGuards(AdminGuard)
     @Post()
     async createUsuario(@Body() dto: RegisterAuthDto) {
         // Se utiliza el método register de AuthService que maneja hashing, validaciones y perfil.
@@ -57,6 +59,7 @@ export class UsuariosController {
 
 
     // **NUEVO: Acción de alta y baja lógica (habilitar y deshabilitar usuarios)**
+    @UseGuards(AdminGuard)
     @Put(':id/habilitar')
     async toggleHabilitado(@Param('id') id: string, @Body('habilitado') habilitado: boolean) {
         
@@ -78,6 +81,7 @@ export class UsuariosController {
     }
     
     // Original: Actualizar usuario (se mantiene, ahora protegido por AdminGuard)
+    @UseGuards(AdminGuard)
     @Put(':id')
     @UseInterceptors(FileInterceptor('imagenPerfil', { storage: memoryStorage() }))
     async actualizarUsuario(

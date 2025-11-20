@@ -27,6 +27,11 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/mi-perfil/mi-perfil').then(m => m.MiPerfil)
     },
     {
+        path: 'perfil/:id',
+        canActivate: [AuthGuard], 
+        loadComponent: () => import('./pages/mi-perfil/mi-perfil').then(m => m.MiPerfil)
+    },
+    {
         path: 'dashboard/usuarios',
         canActivate: [adminGuard], 
         loadComponent: () => import('./pages/dashboard-usuarios/dashboard-usuarios').then(m => m.DashboardUsuariosComponent) 

@@ -35,7 +35,7 @@ export class PublicacionesService {
         limit = 10
     ): Observable<Publicacion[]> {
         return this.http.get<Publicacion[]>(
-        `${this.baseUrl}?orden=${orden}&offset=${offset}&limit=${limit}`
+        `${this.baseUrl}?orden=${orden}&offset=${offset}&limit=${limit}` // ⬅️ Correcto
         );
     }
 

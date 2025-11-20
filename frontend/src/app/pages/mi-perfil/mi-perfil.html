@@ -28,11 +28,11 @@
         </div>
       </div>
       
-      <button *ngIf="!editando" (click)="editando = true" class="btn btn-outline-primary btn-sm mt-2 mb-3">
+      <button *ngIf="!editando && isOwner" (click)="editando = true" class="btn btn-outline-primary btn-sm mt-2 mb-3">
         Editar Perfil
       </button>
       
-      <form [formGroup]="formPerfil" (ngSubmit)="guardarPerfil()" *ngIf="editando" class="text-start mt-3">
+      <form [formGroup]="formPerfil" (ngSubmit)="guardarPerfil()" *ngIf="editando && isOwner" class="text-start mt-3">
 
         <div class="mb-3">
           <label for="imagenPerfil" class="form-label">Foto de Perfil</label>
@@ -69,7 +69,9 @@
     </div>
     <hr class="my-4" />
 
-    <h3 class="fw-semibold mb-3">Mis últimas publicaciones</h3>
+    <h3 class="fw-semibold mb-3">
+        Últimas publicaciones 
+    </h3>
 
     <div *ngIf="publicaciones.length > 0; else sinPublicaciones">
       <div *ngFor="let pub of publicaciones" class="mini-post text-start mb-5">
@@ -98,13 +100,23 @@
             💬 {{ c.texto }}
           </p>
         </div>
-
+        
+        <div class="actions mt-2">
+            <button *ngIf="isOwner || isAdmin"
+                    type="button"
+                    class="btn btn-outline-danger btn-sm"
+                    (click)="eliminarPublicacion(pub._id)">
+                🗑 Eliminar Publicación
+            </button>
+        </div>
         <hr />
       </div>
     </div>
 
     <ng-template #sinPublicaciones>
-      <p class="text-muted fst-italic">Aún no realizaste publicaciones.</p>
+        <p class="text-muted fst-italic">
+        {{ isOwner ? 'Aún no realizaste publicaciones.' : 'Este usuario aún no realizó publicaciones.' }}
+      </p>
     </ng-template>
   </div>
 </div>

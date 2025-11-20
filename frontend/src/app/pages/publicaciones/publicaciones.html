@@ -41,11 +41,12 @@
 
         <ng-container *ngIf="idPostEditando !== pub._id">
           <div class="mini-post text-start mb-5">
-            <div class="d-flex align-items-center gap-3 mb-2">
-              <img [src]="pub.usuarioId.imagenPerfil || '/icons/14.png'" alt="Usuario" class="rounded-circle" width="40" height="40">
-              <strong>{{ pub.usuarioId.nombreUsuario | MayusculaLetra }}</strong>
-            </div>
-
+            <a [routerLink]="['/perfil', pub.usuarioId._id]" class="text-decoration-none text-dark">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                  <img [src]="pub.usuarioId.imagenPerfil || '/icons/14.png'" alt="Usuario" class="rounded-circle" width="40" height="40">
+                  <strong>{{ pub.usuarioId.nombreUsuario | MayusculaLetra }}</strong>
+                </div>
+            </a>
             <a [routerLink]="['/publicacion', pub._id]" class="text-decoration-none text-dark">
               <h5 class="fw-bold mb-1">{{ pub.titulo | MayusculaLetra }}</h5>
             </a>
@@ -114,7 +115,17 @@
         </ng-container>
 
       </div>
-    </div>
+
+      <div *ngIf="scrollingLoading" class="text-center my-4">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando más publicaciones...</span>
+        </div>
+        <p class="text-muted small mt-2">Cargando más publicaciones...</p>
+      </div>
+      <p *ngIf="!hasMorePosts && publicaciones.length > 0 && !scrollingLoading" class="text-center text-muted mt-4">
+        Fin del feed.
+      </p>
+      </div>
 
     <ng-template #sinPosts>
       <p class="text-center text-muted mt-4">Aún no hay publicaciones 😔</p>
