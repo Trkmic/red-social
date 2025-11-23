@@ -2,14 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EstadisticasService } from '../../core/services/estadisticas.service';
-import { NgChartsModule } from 'ng2-charts';
+import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import Swal from 'sweetalert2';
 
 @Component({
     selector: 'app-dashboard-estadisticas',
     standalone: true,
-    imports: [CommonModule, FormsModule, NgChartsModule],
+    imports: [CommonModule, FormsModule, BaseChartDirective],
     templateUrl: './dashboard-estadisticas.html',
     styleUrl: './dashboard-estadisticas.css', 
     providers: [EstadisticasService]
