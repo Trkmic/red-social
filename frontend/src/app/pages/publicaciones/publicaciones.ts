@@ -84,15 +84,14 @@ export class Publicaciones implements OnInit {
         this.offset = 0;
         this.publicaciones = [];
         this.hasMorePosts = true;
-        this.loading = true; // Usar loading para la carga inicial
+        this.loading = true; // loading para la carga inicial
     }
 
     if (!this.hasMorePosts || this.scrollingLoading) {
       // Si no es un reset, salimos si no hay más o está cargando
       if (!reset) return; 
   }
-    
-    // Solo usar scrollingLoading si NO es un reset (es scroll infinito)
+  
     this.scrollingLoading = !reset; 
     if (this.scrollingLoading) this.loading = false;
 

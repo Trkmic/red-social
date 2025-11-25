@@ -87,7 +87,7 @@ export class DashboardUsuariosComponent implements OnInit {
         this.usuariosService.crearUsuario(this.registroForm.value).subscribe({
         next: () => {
             this.registroExitoso = true;
-            this.registroForm.reset({ perfil: 'usuario' }); // Limpiar y restablecer perfil
+            this.registroForm.reset({ perfil: 'usuario' }); 
             this.cargarUsuarios(); // Recargar lista
         },
         error: (err) => {

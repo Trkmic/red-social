@@ -24,12 +24,10 @@ import { LogsModule } from '../logs/logs.module';
       inject: [ConfigService],
     }),
     CloudinaryModule,
-    LogsModule // <<-- Importamos el módulo que provee CloudinaryService
+    LogsModule
   ],
   controllers: [AuthController],
-  // Eliminamos CloudinaryService de providers, ya que viene de CloudinaryModule
   providers: [AuthService, JwtStrategy], 
-  // Exportamos AuthService para que UsuariosModule pueda usarlo
   exports: [MongooseModule, AuthService] 
 })
 export class AuthModule {}

@@ -2,7 +2,6 @@ import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/co
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Comentario } from './comentario.schema';
-import { User } from '../auth/user.schema';
 
 @Injectable()
 export class ComentariosService {
