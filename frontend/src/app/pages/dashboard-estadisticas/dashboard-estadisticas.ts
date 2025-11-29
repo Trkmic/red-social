@@ -50,7 +50,7 @@ export class DashboardEstadisticasComponent implements OnInit {
     public loginsBarChartType: ChartType = 'bar';
     public loginsBarChartOptions: ChartConfiguration['options'] = { responsive: true };
     
-      // 🛑 Gráfico 5: Visitas a mi perfil (Líneas)
+      // Gráfico 5: Visitas a mi perfil (Líneas)
     public profileViewsLineChartData: ChartData<'line'> = {
         labels: [],
         datasets: [{ data: [], label: 'Visitas a Perfil', tension: 0.4, borderColor: '#FF6384', backgroundColor: 'rgba(255, 99, 132, 0.2)' }],
@@ -58,7 +58,7 @@ export class DashboardEstadisticasComponent implements OnInit {
     public profileViewsLineChartType: ChartType = 'line';
     public profileViewsLineChartOptions: ChartConfiguration['options'] = { responsive: true, maintainAspectRatio: false };
     
-      // 🛑 Gráfico 6: Me gusta otorgados por día (Líneas)
+      // Gráfico 6: Me gusta otorgados por día (Líneas)
     public likesLineChartData: ChartData<'line'> = {
         labels: [],
         datasets: [{ data: [], label: 'Likes Otorgados', tension: 0.4, borderColor: '#FF9F40', backgroundColor: 'rgba(255, 159, 64, 0.2)' }],
@@ -71,7 +71,7 @@ export class DashboardEstadisticasComponent implements OnInit {
     constructor(private estadisticasService: EstadisticasService) {}
 
     ngOnInit(): void {
-        // Inicializar con un rango de fechas por defecto (ej. últimos 30 días)
+        // Inicializar con un rango de fechas por defecto 
         const hoy = new Date();
         const hace30Dias = new Date(hoy.getTime() - 30 * 24 * 60 * 60 * 1000);
         this.fechaFin = this.formatDate(hoy);

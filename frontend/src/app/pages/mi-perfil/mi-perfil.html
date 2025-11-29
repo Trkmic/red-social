@@ -1,122 +1,140 @@
 <div class="container my-5">
   <div class="perfil-container card mx-auto text-center p-4 shadow-sm border-0">
     
-    <div *ngIf="usuario">
-      <img
-        [src]="usuario.imagenPerfil || '/icons/14.png'"
-        alt="Foto de perfil"
-        class="rounded-circle shadow-sm mb-3"
-        width="120" height="120" style="object-fit: cover"
-      />
-
-      <h2 class="fw-bold">{{ usuario.nombreUsuario }}</h2>
-
-      
-      
-      <div *ngIf="!editando">
-        <h4 *ngIf="usuario.nombre || usuario.apellido" class="fw-light text-muted mb-3">
-          {{ usuario.nombre }} {{ usuario.apellido }}
-        </h4>
-        
-        <p *ngIf="usuario.descripcion" class="text-muted fst-italic">
-          "{{ usuario.descripcion }}"
-        </p>
-        
-        <div *ngIf="usuario.fechaNacimiento" class="text-muted small mt-2">
-          <strong>Fecha de nacimiento:</strong>
-          {{ usuario.fechaNacimiento | date : 'dd/MM/yyyy' }}
-        </div>
+    <div *ngIf="loadingUsuario" class="text-center p-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando perfil...</span>
       </div>
-      
-      <button *ngIf="!editando && isOwner" (click)="editando = true" class="btn btn-outline-primary btn-sm mt-2 mb-3">
-        Editar Perfil
-      </button>
-      
-      <form [formGroup]="formPerfil" (ngSubmit)="guardarPerfil()" *ngIf="editando && isOwner" class="text-start mt-3">
-
-        <div class="mb-3">
-          <label for="imagenPerfil" class="form-label">Foto de Perfil</label>
-          <input type="file" id="imagenPerfil" class="form-control" (change)="onFileChange($event)">
-          <small class="form-text text-muted">Deja en blanco para no cambiar la foto actual.</small>
-        </div>
-
-        <div class="mb-3">
-          <label for="nombre" class="form-label">Nombre</label>
-          <input type="text" id="nombre" class="form-control" formControlName="nombre">
-        </div>
-
-        <div class="mb-3">
-          <label for="apellido" class="form-label">Apellido</label>
-          <input type="text" id="apellido" class="form-control" formControlName="apellido">
-        </div>
-
-        <div class="mb-3">
-          <label for="descripcion" class="form-label">Descripción</label>
-          <textarea id="descripcion" class="form-control" formControlName="descripcion" rows="3"></textarea>
-        </div>
-
-        <div class="d-flex justify-content-end gap-2 mt-4">
-          <button type="button" (click)="cancelarEdicion()" class="btn btn-secondary">
-            Cancelar
-          </button>
-          <button type="submit" class="btn btn-primary" [disabled]="formPerfil.invalid || formPerfil.pristine">
-            Guardar Cambios
-          </button>
-        </div>
-
-      </form>
-
+      <p class="text-muted mt-2">Cargando perfil...</p>
     </div>
-    <hr class="my-4" />
 
-    <h3 class="fw-semibold mb-3">
-        Últimas publicaciones 
-    </h3>
+    <div *ngIf="!loadingUsuario">
+      <div *ngIf="usuario">
+        <img
+          [src]="usuario.imagenPerfil || '/icons/14.png'"
+          alt="Foto de perfil"
+          class="rounded-circle shadow-sm mb-3"
+          width="120" height="120" style="object-fit: cover"
+        />
 
-    <div *ngIf="publicaciones.length > 0; else sinPublicaciones">
-      <div *ngFor="let pub of publicaciones" class="mini-post text-start mb-5">
-        <div class="d-flex align-items-center gap-3 mb-2">
-          <img
-            [src]="pub.usuarioId.imagenPerfil || '/icons/14.png'"
-            alt="Usuario"
-            class="rounded-circle"
-            width="40"
-            height="40"
-          />
-          <strong>{{
-            pub.usuarioId.nombreUsuario || 'Usuario desconocido'
-          }}</strong>
-        </div>
+        <h2 class="fw-bold">{{ usuario.nombreUsuario }}</h2>
 
-        <h5 class="fw-bold mb-2">{{ pub.titulo }}</h5>
-
-        <p class="text-muted mb-2">{{ pub.mensaje }}</p>
-
-        <img [src]="pub.imagen || '/icons/default.png'" class="post-img" *ngIf="pub.imagen"/>
-
-        <div *ngIf="pub.comentarios?.length" class="comentarios mt-2">
-          <h6 class="fw-semibold small text-muted mb-1">Comentarios:</h6>
-          <p *ngFor="let c of pub.comentarios" class="text-muted small mb-1">
-            💬 {{ c.texto }}
+        
+        
+        <div *ngIf="!editando">
+          <h4 *ngIf="usuario.nombre || usuario.apellido" class="fw-light text-muted mb-3">
+            {{ usuario.nombre }} {{ usuario.apellido }}
+          </h4>
+          
+          <p *ngIf="usuario.descripcion" class="text-muted fst-italic">
+            "{{ usuario.descripcion }}"
           </p>
+          
+          <div *ngIf="usuario.fechaNacimiento" class="text-muted small mt-2">
+            <strong>Fecha de nacimiento:</strong>
+            {{ usuario.fechaNacimiento | date : 'dd/MM/yyyy' }}
+          </div>
         </div>
         
-        <div class="actions mt-2">
-            <button *ngIf="isOwner || isAdmin"
-                    type="button"
-                    class="btn btn-outline-danger btn-sm"
-                    (click)="eliminarPublicacion(pub._id)">
-                🗑 Eliminar Publicación
+        <button *ngIf="!editando && isOwner" (click)="editando = true" class="btn btn-outline-primary btn-sm mt-2 mb-3">
+          Editar Perfil
+        </button>
+        
+        <form [formGroup]="formPerfil" (ngSubmit)="guardarPerfil()" *ngIf="editando && isOwner" class="text-start mt-3">
+
+          <div class="mb-3">
+            <label for="imagenPerfil" class="form-label">Foto de Perfil</label>
+            <input type="file" id="imagenPerfil" class="form-control" (change)="onFileChange($event)">
+            <small class="form-text text-muted">Deja en blanco para no cambiar la foto actual.</small>
+          </div>
+
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" id="nombre" class="form-control" formControlName="nombre">
+          </div>
+
+          <div class="mb-3">
+            <label for="apellido" class="form-label">Apellido</label>
+            <input type="text" id="apellido" class="form-control" formControlName="apellido">
+          </div>
+
+          <div class="mb-3">
+            <label for="descripcion" class="form-label">Descripción</label>
+            <textarea id="descripcion" class="form-control" formControlName="descripcion" rows="3"></textarea>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 mt-4">
+            <button type="button" (click)="cancelarEdicion()" class="btn btn-secondary">
+              Cancelar
             </button>
+            <button type="submit" class="btn btn-primary" [disabled]="formPerfil.invalid || formPerfil.pristine">
+              Guardar Cambios
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+      <hr class="my-4" />
+
+      <h3 class="fw-semibold mb-3">
+          Últimas publicaciones 
+      </h3>
+      
+      <div *ngIf="loadingPublicaciones" class="text-center p-3">
+        <div class="spinner-border text-secondary" role="status">
+          <span class="visually-hidden">Cargando publicaciones...</span>
         </div>
-        <hr />
+        <p class="text-muted small mt-2">Cargando publicaciones...</p>
+      </div>
+
+      <div *ngIf="!loadingPublicaciones">
+        <div *ngIf="publicaciones.length > 0; else sinPublicaciones">
+          <div *ngFor="let pub of publicaciones" class="mini-post text-start mb-5">
+            <div class="d-flex align-items-center gap-3 mb-2">
+              <img
+                [src]="pub.usuarioId.imagenPerfil || '/icons/14.png'"
+                alt="Usuario"
+                class="rounded-circle"
+                width="40"
+                height="40"
+              />
+              <strong>{{
+                pub.usuarioId.nombreUsuario || 'Usuario desconocido'
+              }}</strong>
+            </div>
+
+            <h5 class="fw-bold mb-2">{{ pub.titulo }}</h5>
+
+            <p class="text-muted mb-2">{{ pub.mensaje }}</p>
+
+            <img [src]="pub.imagen || '/icons/default.png'" class="post-img" *ngIf="pub.imagen"/>
+
+            <div *ngIf="pub.comentarios?.length" class="comentarios mt-2">
+              <h6 class="fw-semibold small text-muted mb-1">Comentarios:</h6>
+              <p *ngFor="let c of pub.comentarios" class="text-muted small mb-1">
+                💬 {{ c.texto }}
+              </p>
+            </div>
+            
+            <div class="actions mt-2">
+                <button *ngIf="isOwner || isAdmin"
+                        type="button"
+                        class="btn btn-outline-danger btn-sm"
+                        (click)="eliminarPublicacion(pub._id)">
+                    🗑 Eliminar Publicación
+                </button>
+            </div>
+            <hr />
+          </div>
+        </div>
+
+        <ng-template #sinPublicaciones>
+            <p class="text-muted fst-italic">
+            {{ isOwner ? 'Aún no realizaste publicaciones.' : 'Este usuario aún no realizó publicaciones.' }}
+          </p>
+        </ng-template>
       </div>
     </div>
-
-    <ng-template #sinPublicaciones>
-        <p class="text-muted fst-italic">
-        {{ isOwner ? 'Aún no realizaste publicaciones.' : 'Este usuario aún no realizó publicaciones.' }}
-      </p>
-    </ng-template>
   </div>
 </div>

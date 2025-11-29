@@ -43,17 +43,27 @@ export class AuthService {
   }
 
   logout(showModal = true) { 
-    this.stopSessionTimers(); 
-    localStorage.removeItem('token');
-    localStorage.removeItem('usuario');
+        this.stopSessionTimers(); 
+        localStorage.removeItem('token');
+        localStorage.removeItem('usuario');
     
-    if (showModal) {
-      this.router.navigate(['/login']);
-    } else {
-      this.router.navigate(['/login']);
-      Swal.fire('Sesión Expirada', 'Tu sesión ha finalizado.', 'info');
-    }
-  }
+        if (showModal) {
+          // 🆕 LÓGICA CORREGIDA: Muestra el modal y luego navega.
+          Swal.fire({
+              title: 'Sesión Expirada', 
+              text: 'Tu sesión ha caducado. Por favor, vuelve a iniciar sesión.', 
+              icon: 'warning',
+              confirmButtonText: 'Aceptar',
+              allowOutsideClick: false, // Evita que el usuario cierre el modal sin confirmar
+            }).then(() => {
+                // Navega al login después de que el usuario haga clic en 'Aceptar'
+                this.router.navigate(['/login']);
+            });
+        } else {
+         // Para un logout manual sin modal (navega directamente)
+        this.router.navigate(['/login']);
+        }
+      }
 
   getToken() {
     return localStorage.getItem('token');

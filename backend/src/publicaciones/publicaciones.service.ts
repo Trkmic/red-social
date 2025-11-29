@@ -1,8 +1,8 @@
-import { Injectable, HttpException, HttpStatus, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus,ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, SortOrder, Types } from 'mongoose';
 import { Publicacion } from './publicacion.schema';
-import { User } from '../auth/user.schema';
+import { User , UserDocument} from '../auth/user.schema';
 
 @Injectable()
 export class PublicacionesService {
@@ -55,19 +55,35 @@ export class PublicacionesService {
         }
       }
 
-    async eliminar(id: string, userId: string): Promise<{ mensaje: string }> {
-        const publicacion = await this.publicacionModel.findById(id);
-        if (!publicacion)
-        throw new HttpException('Publicación no encontrada', HttpStatus.NOT_FOUND);
+      async eliminar(publicacionId: string, userId: string): Promise<any> {
+        // 1. Buscar la publicación
+        const publicacion = await this.publicacionModel.findById(publicacionId).exec();
 
-        if (publicacion.usuarioId.toString() !== userId)
-        throw new HttpException(
-            'No tienes permiso para eliminar esta publicación',
-            HttpStatus.FORBIDDEN,
-        );
+        if (!publicacion) {
+            throw new NotFoundException(`Publicación con ID ${publicacionId} no encontrada.`);
+        }
 
-        await this.publicacionModel.findByIdAndDelete(id);
-        return { mensaje: 'Publicación eliminada correctamente' };
+        // 2. Obtener el ID del propietario y el usuario que intenta eliminar
+        const ownerId = publicacion.usuarioId ? publicacion.usuarioId.toString() : null;
+        
+        // 3. Buscar el usuario solicitante para verificar si es Admin
+        const user = await this.userModel.findById(userId).exec();
+        
+        const isOwner = ownerId === userId;
+        const isAdmin = user && user.nombreUsuario === 'pedrooo10'; 
+
+
+        if (!isOwner && !isAdmin) {
+            throw new ForbiddenException('No tienes permiso para eliminar esta publicación.');
+        }
+
+        const result = await this.publicacionModel.deleteOne({ _id: publicacionId }).exec();
+
+        if (result.deletedCount === 0) {
+            throw new NotFoundException(`Publicación con ID ${publicacionId} no pudo ser eliminada.`);
+        }
+
+        return { message: 'Publicación eliminada con éxito' };
     }
 
     async darLike(id: string, userId: string): Promise<Publicacion> {

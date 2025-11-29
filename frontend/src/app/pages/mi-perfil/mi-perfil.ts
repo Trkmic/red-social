@@ -53,6 +53,9 @@ export class MiPerfil implements OnInit {
   userIdAVisualizar: string | null = null;
   private route = inject(ActivatedRoute);
 
+  loadingUsuario: boolean = true; 
+  loadingPublicaciones: boolean = true;
+
   constructor(
     private authService: AuthService,
     private publicacionesService: PublicacionesService,
@@ -125,83 +128,94 @@ export class MiPerfil implements OnInit {
   }
 
   cargarPerfil(userId: string): void {
-        this.authService.getUsuarioPorId(userId).subscribe({
-          next: (userFromServer: any) => {
-            this.usuario = {
-              _id: userFromServer._id,
-              nombreUsuario: userFromServer.nombreUsuario,
-              descripcion: userFromServer.descripcion,
-              imagenPerfil: userFromServer.imagenPerfil,
-              nombre: userFromServer.nombre, 
-              apellido: userFromServer.apellido, 
-              fechaNacimiento: userFromServer.fechaNacimiento, 
-            };
+    this.loadingUsuario = true;
+
+    this.authService.getUsuarioPorId(userId).subscribe({
+      next: (userFromServer: any) => {
+        this.usuario = {
+        _id: userFromServer._id,
+        nombreUsuario: userFromServer.nombreUsuario,
+        descripcion: userFromServer.descripcion,
+        imagenPerfil: userFromServer.imagenPerfil,
+        nombre: userFromServer.nombre, 
+        apellido: userFromServer.apellido, 
+        fechaNacimiento: userFromServer.fechaNacimiento, 
+      };
     
-            // Solo se aplica el patch si es el perfil del dueño
-            if (this.isOwner) {
-                this.formPerfil.patchValue({
-                  nombre: this.usuario.nombre || '',
-                  apellido: this.usuario.apellido || '',
-                  descripcion: this.usuario.descripcion || ''
-                });
-            }
-            
-            this.cargarPublicaciones(userId);
-          },
-          error: (err: any) => console.error('Error al cargar usuario:', err),
-        });
+      // Solo se aplica el patch si es el perfil del dueño
+        if (this.isOwner) {
+          this.formPerfil.patchValue({
+            nombre: this.usuario.nombre || '',
+            apellido: this.usuario.apellido || '',
+            descripcion: this.usuario.descripcion || ''
+            });
+          }
+            this.loadingUsuario = false;
+            this.cargarPublicaciones(userId);
+          },
+          error: (err: any) => {
+            console.error('Error al cargar usuario:', err);
+            this.loadingUsuario = false; // 🔴 Fin de carga de usuario en error
+          }
+        });
     }
 
     cargarPublicaciones(userId: string): void {
-          this.publicacionesService.getPublicacionesUsuario(userId, 3).subscribe({ // Se limita a 3 publicaciones
-            next: (res: Publicacion[]) => {
-              this.publicaciones = res.map((pub) => ({
-                _id: pub._id,
-                titulo: pub.titulo,
-                mensaje: pub.mensaje,
-                imagen: pub.imagen || null,
-                likes: pub.likes?.map((l: string | Types.ObjectId) => l.toString()) || [],
-                usuarioId: {
-                  _id: (pub.usuarioId as any)._id,
-                  nombreUsuario:
-                    (pub.usuarioId as any).nombreUsuario ||
-                    (pub.usuarioId as any).username,
-                  imagenPerfil: (pub.usuarioId as any).imagenPerfil,
-                },
-                createdAt: pub.createdAt,
-                comentarios: pub.comentarios || [],
-              }));
-            },
-            error: (err: any) => console.error('Error al cargar publicaciones:', err),
-          });
+      this.loadingPublicaciones = true;    
+      
+      this.publicacionesService.getPublicacionesUsuario(userId, 3).subscribe({ // Se limita a 3 publicaciones
+            next: (res: Publicacion[]) => {
+              this.publicaciones = res.map((pub) => ({
+                _id: pub._id,
+                titulo: pub.titulo,
+                mensaje: pub.mensaje,
+                imagen: pub.imagen || null,
+                likes: pub.likes?.map((l: string | Types.ObjectId) => l.toString()) || [],
+                usuarioId: {
+                  _id: (pub.usuarioId as any)._id,
+                  nombreUsuario:
+                    (pub.usuarioId as any).nombreUsuario ||
+                    (pub.usuarioId as any).username,
+                  imagenPerfil: (pub.usuarioId as any).imagenPerfil,
+              },
+              createdAt: pub.createdAt,
+              comentarios: pub.comentarios || [],
+              }));
+              this.loadingPublicaciones = false;
+            },
+            error: (err: any) => {
+              console.error('Error al cargar publicaciones:', err);
+              this.loadingPublicaciones = false; // 🔴 Fin de carga de publicaciones en error
+            }
+          });
   }
 
   eliminarPublicacion(id: string): void {
 
-        Swal.fire({
-          title: '¿Seguro que deseas eliminar esta publicación?',
-          text: 'Esta acción no se puede deshacer.',
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Sí, eliminar',
-          cancelButtonText: 'Cancelar'
-        }).then((result) => {
+        Swal.fire({
+          title: '¿Seguro que deseas eliminar esta publicación?',
+          text: 'Esta acción no se puede deshacer.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
     
-          if (result.isConfirmed) {
-            this.publicacionesService.eliminarPublicacion(id).subscribe({
-              next: () => {
-                if (this.userIdAVisualizar) {
-                    this.cargarPublicaciones(this.userIdAVisualizar); // Recargar publicaciones del perfil actual
-                }
-                Swal.fire('Eliminada', 'La publicación fue eliminada con éxito.', 'success');
-              },
-              error: (err) => {
-                Swal.fire('Error', 'Ocurrió un problema al eliminar la publicación.', 'error');
-              }
-            });
-          }
-        });
+          if (result.isConfirmed) {
+            this.publicacionesService.eliminarPublicacion(id).subscribe({
+              next: () => {
+                if (this.userIdAVisualizar) {
+                  this.cargarPublicaciones(this.userIdAVisualizar); // Recargar publicaciones del perfil actual
+                }
+                Swal.fire('Eliminada', 'La publicación fue eliminada con éxito.', 'success');
+              },
+              error: (err) => {
+                Swal.fire('Error', 'Ocurrió un problema al eliminar la publicación.', 'error');
+              }
+            });
+          }
+        });
   }
 }

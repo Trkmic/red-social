@@ -35,100 +35,110 @@
       </button>
     </div>
 
-    <div *ngIf="publicaciones.length > 0; else sinPosts">
-      
-      <div *ngFor="let pub of publicaciones">
+    <div *ngIf="loading && publicaciones.length === 0" class="text-center p-5">
+      <div class="spinner-border text-light" role="status">
+        <span class="visually-hidden">Cargando publicaciones...</span>
+      </div>
+      <p class="text-white small mt-2">Cargando publicaciones...</p>
+    </div>
 
-        <ng-container *ngIf="idPostEditando !== pub._id">
-          <div class="mini-post text-start mb-5">
-            <a [routerLink]="['/perfil', pub.usuarioId._id]" class="text-decoration-none text-dark">
-                <div class="d-flex align-items-center gap-3 mb-2">
-                  <img [src]="pub.usuarioId.imagenPerfil || '/icons/14.png'" alt="Usuario" class="rounded-circle" width="40" height="40">
-                  <strong>{{ pub.usuarioId.nombreUsuario | MayusculaLetra }}</strong>
-                </div>
-            </a>
-            <a [routerLink]="['/publicacion', pub._id]" class="text-decoration-none text-dark">
-              <h5 class="fw-bold mb-1">{{ pub.titulo | MayusculaLetra }}</h5>
-            </a>
-            
-            <small class="text-muted d-block mb-2">📅 {{ pub.createdAt | FormateoHora }}</small>
-            <p class="text-muted mb-2">{{ pub.mensaje | limitadorCaracteres:200 }}</p>
-            <img [src]="pub.imagen " class="post-img" *ngIf="pub.imagen">
+    <ng-container *ngIf="!loading || publicaciones.length > 0">
+      <div *ngIf="publicaciones.length > 0; else sinPosts">
+        
+        <div *ngFor="let pub of publicaciones">
 
-            <div class="actions d-flex gap-2 mt-2">
-              <button type="button" class="btn btn-sm" [ngClass]="{ 'btn-primary': yaLeDioLike(pub), 'btn-outline-primary': !yaLeDioLike(pub) }" (click)="toggleLike(pub)">
-                ❤️ {{ pub.likes.length || 0 }}
-              </button>
-              
-              <a [routerLink]="['/publicacion', pub._id]" class="btn btn-outline-secondary btn-sm">
-                💬 Comentar
+          <ng-container *ngIf="idPostEditando !== pub._id">
+            <div class="mini-post text-start mb-5">
+              <a [routerLink]="['/perfil', pub.usuarioId._id]" class="text-decoration-none text-dark">
+                  <div class="d-flex align-items-center gap-3 mb-2">
+                    <img [src]="pub.usuarioId.imagenPerfil || '/icons/14.png'" alt="Usuario" class="rounded-circle" width="40" height="40">
+                    <strong>{{ pub.usuarioId.nombreUsuario | MayusculaLetra }}</strong>
+                  </div>
+              </a>
+              <a [routerLink]="['/publicacion', pub._id]" class="text-decoration-none text-dark">
+                <h5 class="fw-bold mb-1">{{ pub.titulo | MayusculaLetra }}</h5>
               </a>
               
-              <button *ngIf="pub.usuarioId && ( (pub.usuarioId._id === usuarioLogueado?._id || pub.usuarioId._id === usuarioLogueado?.id) || isAdmin )"
-                      type="button"
-                      class="btn btn-outline-secondary btn-sm"
-                      (click)="editarPublicacion(pub)">
-                ✏️ Editar
-              </button>
+              <small class="text-muted d-block mb-2">📅 {{ pub.createdAt | FormateoHora }}</small>
+              <p class="text-muted mb-2">{{ pub.mensaje | limitadorCaracteres:200 }}</p>
+              <img [src]="pub.imagen " class="post-img" *ngIf="pub.imagen">
 
-              <button *ngIf="pub.usuarioId && ( (pub.usuarioId._id === usuarioLogueado?._id || pub.usuarioId._id === usuarioLogueado?.id) || isAdmin )"
-                      type="button"
-                      class="btn btn-outline-danger btn-sm"
-                      (click)="eliminarPublicacion(pub._id)">
-                🗑 Eliminar
-              </button>
+              <div class="actions d-flex gap-2 mt-2">
+                <button type="button" class="btn btn-sm" [ngClass]="{ 'btn-primary': yaLeDioLike(pub), 'btn-outline-primary': !yaLeDioLike(pub) }" (click)="toggleLike(pub)">
+                  ❤️ {{ pub.likes.length || 0 }}
+                </button>
+                
+                <a [routerLink]="['/publicacion', pub._id]" class="btn btn-outline-secondary btn-sm">
+                  💬 Comentar
+                </a>
+                
+                <button *ngIf="pub.usuarioId && ( (pub.usuarioId._id === usuarioLogueado?._id || pub.usuarioId._id === usuarioLogueado?.id) || isAdmin )"
+                        type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        (click)="editarPublicacion(pub)">
+                  ✏️ Editar
+                </button>
+
+                <button *ngIf="pub.usuarioId && ( (pub.usuarioId._id === usuarioLogueado?._id || pub.usuarioId._id === usuarioLogueado?.id) || isAdmin )"
+                        type="button"
+                        class="btn btn-outline-danger btn-sm"
+                        (click)="eliminarPublicacion(pub._id)">
+                  🗑 Eliminar
+                </button>
+              </div>
+              <hr>
             </div>
-            <hr>
-          </div>
-        </ng-container>
+          </ng-container>
 
-        <ng-container *ngIf="idPostEditando === pub._id">
-          <div class="mini-post text-start mb-5 p-3 border rounded shadow-sm">
-            <h5 class="fw-bold mb-3">Editando Publicación...</h5>
-            
-            <form [formGroup]="formEditarPost" (ngSubmit)="guardarEdicionPost()">
-              <div class="mb-3">
-                <label class="form-label small text-muted">Título</label>
-                <input type="text" class="form-control" formControlName="titulo">
-              </div>
-              <div class="mb-3">
-                <label class="form-label small text-muted">Mensaje</label>
-                <textarea class="form-control" formControlName="mensaje" rows="4"></textarea>
-              </div>
-              <div class="mb-3">
-                <label class="form-label small text-muted">Cambiar Imagen (Opcional)</label>
-                <input type="file" (change)="onFileChangeEdit($event)" class="form-control">
-                <small class="form-text text-muted">Imagen actual:</small>
-                <img [src]="pub.imagen" class="mt-2" style="width: 100px; height: auto; object-fit: cover;">
-              </div>
+          <ng-container *ngIf="idPostEditando === pub._id">
+            <div class="mini-post text-start mb-5 p-3 border rounded shadow-sm">
+              <h5 class="fw-bold mb-3">Editando Publicación...</h5>
+              
+              <form [formGroup]="formEditarPost" (ngSubmit)="guardarEdicionPost()">
+                <div class="mb-3">
+                  <label class="form-label small text-muted">Título</label>
+                  <input type="text" class="form-control" formControlName="titulo">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label small text-muted">Mensaje</label>
+                  <textarea class="form-control" formControlName="mensaje" rows="4"></textarea>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label small text-muted">Cambiar Imagen (Opcional)</label>
+                  <input type="file" (change)="onFileChangeEdit($event)" class="form-control">
+                  <small class="form-text text-muted">Imagen actual:</small>
+                  <img [src]="pub.imagen" class="mt-2" style="width: 100px; height: auto; object-fit: cover;">
+                </div>
 
-              <div class="d-flex justify-content-end gap-2 mt-4">
-                <button type="button" (click)="cancelarEdicion()" class="btn btn-secondary">
-                  Cancelar
-                </button>
-                <button type="submit" class="btn btn-primary" [disabled]="formEditarPost.invalid || loadingEdit">
-                  {{ loadingEdit ? 'Guardando...' : 'Guardar Cambios' }}
-                </button>
-              </div>
-            </form>
-          </div>
-        </ng-container>
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                  <button type="button" (click)="cancelarEdicion()" class="btn btn-secondary">
+                    Cancelar
+                  </button>
+                  <button type="submit" class="btn btn-primary" [disabled]="formEditarPost.invalid || loadingEdit">
+                    {{ loadingEdit ? 'Guardando...' : 'Guardar Cambios' }}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </ng-container>
 
-      </div>
-
-      <div *ngIf="scrollingLoading" class="text-center my-4">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Cargando más publicaciones...</span>
         </div>
-        <p class="text-muted small mt-2">Cargando más publicaciones...</p>
-      </div>
-      <p *ngIf="!hasMorePosts && publicaciones.length > 0 && !scrollingLoading" class="text-center text-muted mt-4">
-        Fin del feed.
-      </p>
+
+        <div *ngIf="scrollingLoading" class="text-center my-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando más publicaciones...</span>
+          </div>
+          <p class="text-muted small mt-2">Cargando más publicaciones...</p>
+        </div>
+        <p *ngIf="!hasMorePosts && publicaciones.length > 0 && !scrollingLoading" class="text-center text-muted mt-4">
+          Fin del feed.
+        </p>
       </div>
 
-    <ng-template #sinPosts>
-      <p class="text-center text-muted mt-4">Aún no hay publicaciones 😔</p>
-    </ng-template>
+      <ng-template #sinPosts>
+        <p class="text-center text-muted mt-4">Aún no hay publicaciones 😔</p>
+      </ng-template>
+    </ng-container>
+    
   </div>
 </div>

@@ -108,17 +108,26 @@ export class AuthController{
         }
 
         let urlImagen: string | undefined;
-        if (archivo) {
-            urlImagen = await this.cloudinaryService.uploadImage(archivo, 'usuarios');
+    if (archivo) {
+        urlImagen = await this.cloudinaryService.uploadImage(archivo, 'usuarios');
+    }
+
+    try {
+        // 🟢 1. Intenta registrar el usuario.
+        return await this.authService.register(dto, urlImagen);
+    } catch (err) {
+        // 🟢 2. Si el error es una HttpException esperada (como BadRequestException),
+        //    la relanzamos para que se envíe con el código 400.
+        if (err instanceof HttpException) {
+            throw err; 
         }
 
-        try {
-            return await this.authService.register(dto, urlImagen);
-        } catch (err) {
-            throw new HttpException(
-                'Error interno al registrar el usuario',
-                HttpStatus.INTERNAL_SERVER_ERROR,
-            );
-        }
+        // 🟢 3. Si es cualquier otro error (problema de base de datos, error de servidor),
+        //    entonces sí lo tratamos como un 500 genérico.
+        throw new HttpException(
+            'Error interno al registrar el usuario (Error de servidor/base de datos)',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+    }
     }
 }

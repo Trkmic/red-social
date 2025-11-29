@@ -11,16 +11,14 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [
-      'http://localhost:4200',
-      'https://red-social-sage.vercel.app',
-      'https://red-social-gxjeq06pf-ignacios-projects-d7c4c7c5.vercel.app',
+      'https://red-social-oaku.onrender.com', // Dominio de Render (si lo usas)
+      'http://127.0.0.1:8080',                // Para probar la PWA localmente
+      'http://localhost:8080',                // Por si acaso
+      'https://red-social-sage.vercel.app'
     ],
-    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
-
-  // ✅ Hacer pública la carpeta de imágenes
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
     prefix: '/uploads/',
   });
