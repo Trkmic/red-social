@@ -1,114 +1,114 @@
 <div class="container my-5">
-    <div class="row justify-content-center">
-      <div class="col-lg-8">
-        
-        <!-- Publicación Principal -->
-        <div *ngIf="publicacion; else noEncontrado" class="card shadow-sm border-0">
-          <div class="card-body p-4">
-  
-            <!-- Autor -->
-            <div class="d-flex align-items-center gap-3 mb-3">
-              <img [src]="publicacion.usuarioId.imagenPerfil || '/icons/14.png'"
-                  alt="Usuario" class="rounded-circle" width="45" height="45">
-                  <strong>{{ (publicacion.usuarioId.nombreUsuario || '') | MayusculaLetra }}</strong>
-            </div>
-  
-            <!-- Título -->
-            <h2 class="fw-bold mb-2">{{ publicacion.titulo | MayusculaLetra }}</h2>
-            
-            <!-- Fecha -->
-            <small class="text-muted d-block mb-3">📅 {{ publicacion.createdAt | FormateoHora }}</small>
-            
-            <!-- Imagen (si existe) -->
-            <img *ngIf="publicacion.imagen" [src]="publicacion.imagen" class="img-fluid rounded mb-3">
-            
-            <!-- Mensaje -->
-            <p class="card-text fs-5">{{ publicacion.mensaje }}</p>
-  
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      
+      <div *ngIf="loadingPublicacion" class="loading-spinner-page">
+          <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Cargando publicación...</span>
           </div>
-  
-          <hr class="my-0">
-  
-          <!-- Comentarios -->
-          <div class="card-body p-4">
-            <h4 class="fw-semibold mb-3"> Escribe un comentario 👇</h4>
-  
-            <!-- Nuevo Comentario -->
-            <form [formGroup]="formComentario" (ngSubmit)="enviarComentario()" class="mb-4">
-              <div class="mb-2">
-                <textarea formControlName="texto" class="form-control" rows="3" placeholder="Escribe un comentario..." #Comentario maxlength="50"></textarea>
-              </div>
-              <small> {{Comentario.value.length}}/50 </small>
-
-              <div class="text-end">
-                <button type="submit" class="btn btn-primary" [disabled]="formComentario.invalid">Comentar</button>
-              </div>
-            </form>
-  
-            <h4 class="fw-semibold mb-3">Comentarios 💬</h4>
-
-            <!-- Lista de Comentarios -->
-            <div *ngIf="comentarios.length > 0; else sinComentarios">
-              
-              <div *ngFor="let comentario of comentarios" class="comentario-item mb-3">
-                <div class="d-flex gap-3">
-                  <img [src]="comentario.usuarioId?.imagenPerfil || '/icons/14.png'" alt="User" class="rounded-circle mt-1" width="35" height="35">
-                  <div class="flex-grow-1">
-  
-                    <!-- (Default) -->
-                    <div *ngIf="editandoComentarioId !== comentario._id">
-                      <strong>{{ comentario.usuarioId?.nombreUsuario }}</strong>
-                      <small class="text-muted ms-2">{{ comentario.createdAt | FormateoHora }}</small>
-                      <small *ngIf="comentario.editado" class="text-muted fst-italic ms-2">(editado)</small>
-                      
-                      <p class="mb-1">{{ comentario.texto }}</p>
-  
-                      <!-- (solo para el dueño) -->
-                      <div *ngIf="usuarioLogueado?._id === comentario.usuarioId?._id">
-                        <button (click)="iniciarEdicion(comentario)" class="btn btn-link btn-sm p-0">Editar</button>
-                      </div>
-                    </div>
-  
-                    <!-- EDICIÓN -->
-                    <div *ngIf="editandoComentarioId === comentario._id">
-                      <form [formGroup]="formEditarComentario" (ngSubmit)="guardarEdicionComentario(comentario._id)">
-                        <textarea formControlName="texto" class="form-control form-control-sm mb-2" #ComentarioEditado maxlength="50"></textarea>
-                        <small> {{ComentarioEditado.value.length}}/50 </small>
-                        
-                        <div class="d-flex gap-2">
-                          <button type="button" (click)="cancelarEdicion()" class="btn btn-secondary btn-sm">Cancelar</button>
-                          <button type="submit" class="btn btn-success btn-sm" [disabled]="formEditarComentario.invalid">Guardar</button>
-                        </div>
-                      </form>
-                    </div>
-  
-                  </div>
-                </div>
-              </div>
-  
-            </div>
-            <ng-template #sinComentarios>
-              <p class="text-muted fst-italic">Sé el primero en comentar.</p>
-            </ng-template>
-  
-            <!-- Botón Cargar Más -->
-            <div *ngIf="hayMasComentarios && comentarios.length > 0" class="text-center mt-3">
-              <button (click)="cargarComentarios()" class="btn btn-outline-secondary btn-sm">
-                Cargar más comentarios
-              </button>
-            </div>
-  
-          </div>
-        </div>
-  
-        <!-- no se encuentra la publicación -->
-        <ng-template #noEncontrado>
-          <div class="alert alert-danger text-center">
-            <h4 class="alert-heading">Publicación no encontrada</h4>
-            <p>La publicación que buscas no existe o fue eliminada.</p>
-          </div>
-        </ng-template>
-
+          <p class="text-muted mt-3">Cargando publicación y comentarios...</p>
       </div>
+      
+      <div *ngIf="!loadingPublicacion">
+          <div *ngIf="publicacion; else noEncontrado" class="card shadow-sm border-0">
+              <div class="card-body p-4">
+  
+                  <div class="d-flex align-items-center gap-3 mb-3">
+                      <img [src]="publicacion.usuarioId.imagenPerfil || '/icons/14.png'"
+                          alt="Usuario" class="rounded-circle" width="45" height="45">
+                      <strong>{{ (publicacion.usuarioId.nombreUsuario || '') | MayusculaLetra }}</strong>
+                  </div>
+  
+                  <h2 class="fw-bold mb-2">{{ publicacion.titulo | MayusculaLetra }}</h2>
+                  
+                  <small class="text-muted d-block mb-3">📅 {{ publicacion.createdAt | FormateoHora }}</small>
+                  
+                  <img *ngIf="publicacion.imagen" [src]="publicacion.imagen" class="img-fluid rounded mb-3">
+                  
+                  <p class="card-text fs-5">{{ publicacion.mensaje }}</p>
+  
+              </div>
+  
+              <hr class="my-0">
+  
+              <div class="card-body p-4">
+                  <h4 class="fw-semibold mb-3"> Escribe un comentario 👇</h4>
+      
+                  <form [formGroup]="formComentario" (ngSubmit)="enviarComentario()" class="mb-4">
+                      <div class="mb-2">
+                          <textarea formControlName="texto" class="form-control" rows="3" placeholder="Escribe un comentario..." #Comentario maxlength="50"></textarea>
+                      </div>
+                      <small> {{Comentario.value.length}}/50 </small>
+  
+                      <div class="text-end">
+                          <button type="submit" 
+                                  class="btn btn-primary" 
+                                  [disabled]="formComentario.invalid || sendingComentario">
+                              <span *ngIf="sendingComentario" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                              {{ sendingComentario ? 'Enviando...' : 'Comentar' }}
+                          </button>
+                      </div>
+                  </form>
+      
+                  <h4 class="fw-semibold mb-3">Comentarios 💬</h4>
+  
+                  <div *ngIf="comentarios.length > 0; else sinComentarios">
+                      
+                      <div *ngFor="let comentario of comentarios" class="comentario-item mb-3">
+                          <div class="d-flex gap-3">
+                              <img [src]="comentario.usuarioId?.imagenPerfil || '/icons/14.png'" alt="User" class="rounded-circle mt-1" width="35" height="35">
+                              <div class="flex-grow-1">
+      
+                                  <div *ngIf="editandoComentarioId !== comentario._id">
+                                      <strong>{{ comentario.usuarioId?.nombreUsuario }}</strong>
+                                      <small class="text-muted ms-2">{{ comentario.createdAt | FormateoHora }}</small>
+                                      <small *ngIf="comentario.editado" class="text-muted fst-italic ms-2">(editado)</small>
+                                      
+                                      <p class="mb-1">{{ comentario.texto }}</p>
+      
+                                      <div *ngIf="usuarioLogueado?._id === comentario.usuarioId?._id">
+                                          <button (click)="iniciarEdicion(comentario)" class="btn btn-link btn-sm p-0">Editar</button>
+                                      </div>
+                                  </div>
+      
+                                  <div *ngIf="editandoComentarioId === comentario._id">
+                                      <form [formGroup]="formEditarComentario" (ngSubmit)="guardarEdicionComentario(comentario._id)">
+                                          <textarea formControlName="texto" class="form-control form-control-sm mb-2" #ComentarioEditado maxlength="50"></textarea>
+                                          <small> {{ComentarioEditado.value.length}}/50 </small>
+                                          
+                                          <div class="d-flex gap-2">
+                                              <button type="button" (click)="cancelarEdicion()" class="btn btn-secondary btn-sm">Cancelar</button>
+                                              <button type="submit" class="btn btn-success btn-sm" [disabled]="formEditarComentario.invalid">Guardar</button>
+                                          </div>
+                                      </form>
+                                  </div>
+      
+                              </div>
+                          </div>
+                      </div>
+      
+                  </div>
+                  <ng-template #sinComentarios>
+                      <p class="text-muted fst-italic">Sé el primero en comentar.</p>
+                  </ng-template>
+      
+                  <div *ngIf="hayMasComentarios && comentarios.length > 0" class="text-center mt-3">
+                      <button (click)="cargarComentarios()" class="btn btn-outline-secondary btn-sm">
+                          Cargar más comentarios
+                      </button>
+                  </div>
+  
+              </div>
+          </div>
+          
+          <ng-template #noEncontrado>
+              <div class="alert alert-danger text-center">
+                  <h4 class="alert-heading">Publicación no encontrada</h4>
+                  <p>La publicación que buscas no existe o fue eliminada.</p>
+              </div>
+          </ng-template>
+      </div>
+
     </div>
   </div>
+</div>

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { tap, catchError, map } from 'rxjs/operators';
-import { Observable, of, Subscription, timer } from 'rxjs';
+import { tap, catchError, map, switchMap } from 'rxjs/operators';
+import { Observable, of, Subscription, timer, interval } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2'; 
@@ -15,11 +15,21 @@ export class AuthService {
   private baseUrl = environment.apiUrl;
   private sessionWarningTimer?: Subscription;
   private sessionLogoutTimer?: Subscription;
+  
+  private sessionProactiveCheckSubscription: Subscription | null = null;
+  private readonly PROACTIVE_CHECK_INTERVAL = 300000;
+
+
 
   constructor(private http: HttpClient, 
     private router: Router
-  ) 
-  {}
+  )
+    {
+      // 💡 Si hay un token, iniciamos el chequeo proactivo
+      if (this.getToken()) {
+          this.startProactiveCheck();
+      }
+    }
 
   register(formData: FormData) {
     return this.http.post(`${this.baseUrl}/auth/register`, formData);
@@ -36,34 +46,39 @@ export class AuthService {
           localStorage.setItem('token', res.token);
           localStorage.setItem('usuario', JSON.stringify(usuario));
         
-          this.startSessionTimers();
+          // 🟢 INICIAR LA COMPROBACIÓN PROACTIVA
+          this.startProactiveCheck();
+          // ⚠️ Mantener startSessionTimers() si quieres la advertencia visual.
+          this.startSessionTimers(); 
         }
       })
     );
   }
 
   logout(showModal = true) { 
-        this.stopSessionTimers(); 
-        localStorage.removeItem('token');
-        localStorage.removeItem('usuario');
+    // 🔴 DETENER TODOS LOS TIMERS
+    this.stopSessionTimers(); 
+    this.stopProactiveCheck(); // 🆕 DETENER EL CHEQUEO PROACTIVO
     
-        if (showModal) {
-          // 🆕 LÓGICA CORREGIDA: Muestra el modal y luego navega.
-          Swal.fire({
-              title: 'Sesión Expirada', 
-              text: 'Tu sesión ha caducado. Por favor, vuelve a iniciar sesión.', 
-              icon: 'warning',
-              confirmButtonText: 'Aceptar',
-              allowOutsideClick: false, // Evita que el usuario cierre el modal sin confirmar
-            }).then(() => {
-                // Navega al login después de que el usuario haga clic en 'Aceptar'
-                this.router.navigate(['/login']);
-            });
-        } else {
-         // Para un logout manual sin modal (navega directamente)
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    
+    // ⚠️ Lógica de Modal (para expiración o cierre manual)
+    if (showModal) {
+        Swal.fire({
+            title: 'Sesión Expirada', // Usamos este título para el logout manual y el expirado
+            text: 'Tu sesión ha caducado. Por favor, vuelve a iniciar sesión.', 
+            icon: 'warning',
+            confirmButtonText: 'Aceptar',
+            allowOutsideClick: false,
+        }).then(() => {
+            this.router.navigate(['/login']);
+        });
+    } else {
+        // Navegación directa (usado por el Interceptor si ya mostró el modal)
         this.router.navigate(['/login']);
-        }
-      }
+    }
+  }
 
   getToken() {
     return localStorage.getItem('token');
@@ -217,5 +232,39 @@ export class AuthService {
         return false;
     }
   }
+
+  startProactiveCheck(): void {
+    this.stopProactiveCheck(); // Limpiar chequeo anterior
+
+    this.sessionProactiveCheckSubscription = interval(this.PROACTIVE_CHECK_INTERVAL)
+      .pipe(
+        // Llamamos al endpoint de refresh. Si el token falla, el Interceptor capturará el 401.
+        switchMap(() => this.http.post<any>(`${this.baseUrl}/auth/refresh`, {})
+          .pipe(
+            // Capturamos errores de red/server que no sean 401
+            catchError(error => {
+                // El error 401 es manejado por el Interceptor (no rompemos la cadena aquí).
+                return of(null); 
+            })
+          )
+        )
+      )
+      .subscribe({
+          next: (res) => {
+            if (res && res.token) {
+                // Si el refresh fue exitoso, actualizamos el token
+                localStorage.setItem('token', res.token);
+            }
+          },
+          error: (err) => {} // Los errores 401 son manejados por el Interceptor global
+      });
+}
+
+stopProactiveCheck(): void {
+    if (this.sessionProactiveCheckSubscription) {
+      this.sessionProactiveCheckSubscription.unsubscribe();
+      this.sessionProactiveCheckSubscription = null;
+    }
+}
 }
 

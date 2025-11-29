@@ -59,6 +59,9 @@ export class PublicacionDetalle implements OnInit {
   // Estado de edición
   editandoComentarioId: string | null = null;
 
+  loadingPublicacion: boolean = true; 
+  sendingComentario: boolean = false;
+
   constructor() {
     this.formComentario = this.fb.group({
       texto: ['', [Validators.required,Validators.maxLength(50)]],
@@ -73,15 +76,21 @@ export class PublicacionDetalle implements OnInit {
     const publicacionId = this.route.snapshot.paramMap.get('id');
 
     if (publicacionId) {
+      this.loadingPublicacion = true; // 🟢 Iniciar carga al buscar la publicación
 
       this.pubService.getPublicacionPorId(publicacionId).subscribe({
         next: (pub) => {
           this.publicacion = pub;
-
+          this.loadingPublicacion = false; // 🔴 Finalizar carga si es exitoso
           this.cargarComentarios();
         },
-        error: () => this.publicacion = null, 
+        error: () => {
+            this.publicacion = null;
+            this.loadingPublicacion = false; // 🔴 Finalizar carga en error
+        } 
       });
+    } else {
+        this.loadingPublicacion = false; // No hay ID, no hay carga
     }
   }
 
@@ -122,6 +131,7 @@ export class PublicacionDetalle implements OnInit {
 
     this.comentarios.push(comentarioOptimista);
     this.formComentario.reset();
+    this.sendingComentario = true;
 
     this.pubService.crearComentario(this.publicacion._id, texto).subscribe({
       next: (comentarioReal) => {
@@ -129,10 +139,12 @@ export class PublicacionDetalle implements OnInit {
         if (index !== -1) {
           this.comentarios[index] = comentarioReal;
         }
+        this.sendingComentario = false;
       },
       error: (err) => {
         this.comentarios = this.comentarios.filter(c => c._id !== comentarioOptimista._id);
         Swal.fire('Error', 'No se pudo enviar el comentario.', 'error');
+        this.sendingComentario = false;
       }
     });
   }

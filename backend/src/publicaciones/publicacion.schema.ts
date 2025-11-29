@@ -3,19 +3,19 @@ import { Document, Types } from 'mongoose';
 
 @Schema({ timestamps: true })
 export class Publicacion extends Document {
-    @Prop({ required: true })
+    @Prop({ required: true , index: true})
     titulo: string;
 
-    @Prop({ required: true })
+    @Prop({ required: true , index: true})
     mensaje: string;
 
     @Prop()
     imagen?: string;
 
-    @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+    @Prop({ type: Types.ObjectId, ref: 'User', required: true , index: true})
     usuarioId: Types.ObjectId;
     
-    @Prop({ type: [{ type: Types.ObjectId, ref: 'Usuario' }], default: [] })
+    @Prop({ type: [{ type: Types.ObjectId, ref: 'Usuario' }], default: [] , index: true})
     likes: Types.ObjectId[];
 }
 

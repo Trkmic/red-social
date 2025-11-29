@@ -3,8 +3,24 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EstadisticasService } from '../../core/services/estadisticas.service';
 import { BaseChartDirective } from 'ng2-charts';
-import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
+import { ChartConfiguration, ChartData, ChartType, Chart,PieController,ArcElement,LineController,CategoryScale,LinearScale,PointElement,LineElement,BarController,BarElement,Title,Tooltip,Legend } from 'chart.js';
 import Swal from 'sweetalert2';
+
+Chart.register(
+    PieController,
+    ArcElement, 
+    LineController,
+    CategoryScale, 
+    LinearScale,  
+    PointElement,
+    LineElement,
+    BarController,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+);
+
 
 @Component({
     selector: 'app-dashboard-estadisticas',
