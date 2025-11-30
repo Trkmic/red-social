@@ -14,7 +14,8 @@ async function bootstrap() {
       'https://red-social-oaku.onrender.com', // Dominio de Render (si lo usas)
       'http://127.0.0.1:8080',                // Para probar la PWA localmente
       'http://localhost:8080',                // Por si acaso
-      'https://red-social-sage.vercel.app'
+      'https://red-social-sage.vercel.app',
+      'http://localhost:4200'
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,

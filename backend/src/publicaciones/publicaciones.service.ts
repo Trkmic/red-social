@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, SortOrder, Types } from 'mongoose';
 import { Publicacion } from './publicacion.schema';
 import { User , UserDocument} from '../auth/user.schema';
+import { LogsService } from '../logs/logs.service';
 
 @Injectable()
 export class PublicacionesService {
@@ -11,6 +12,7 @@ export class PublicacionesService {
         private readonly publicacionModel: Model<Publicacion>,
         @InjectModel(User.name) 
         private readonly userModel: Model<User>,
+        private readonly logsService: LogsService,
       ) {}
 
     async crear(data: any): Promise<Publicacion> {
@@ -98,6 +100,7 @@ export class PublicacionesService {
         if (!yaTieneLike) {
         publicacion.likes.push(userObjectId);
         await publicacion.save();
+        await this.logsService.logLike(userId, id);
         }
     
         const populated = await this.publicacionModel

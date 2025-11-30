@@ -6,6 +6,8 @@ import { Publicacion, PublicacionSchema } from './publicacion.schema';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { User, UserSchema } from '../auth/user.schema';
 import { AuthModule } from '../auth/auth.module';
+import { LogsModule } from '../logs/logs.module';
+
 
 @Module({
   imports: [
@@ -14,6 +16,7 @@ import { AuthModule } from '../auth/auth.module';
       { name: User.name, schema: UserSchema }
     ]),
     AuthModule,
+    LogsModule
   ],
   controllers: [PublicacionesController],
   providers: [PublicacionesService, CloudinaryService],

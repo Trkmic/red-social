@@ -87,11 +87,13 @@ export class DashboardEstadisticasComponent implements OnInit {
     constructor(private estadisticasService: EstadisticasService) {}
 
     ngOnInit(): void {
-        // Inicializar con un rango de fechas por defecto 
         const hoy = new Date();
-        const hace30Dias = new Date(hoy.getTime() - 30 * 24 * 60 * 60 * 1000);
+        // CAMBIO: Mostrar últimos 90 días en lugar de 30
+        const haceMucho = new Date(hoy.getTime() - 90 * 24 * 60 * 60 * 1000); 
+        
         this.fechaFin = this.formatDate(hoy);
-        this.fechaInicio = this.formatDate(hace30Dias);
+        this.fechaInicio = this.formatDate(haceMucho);
+        
         this.cargarEstadisticas();
     }
 

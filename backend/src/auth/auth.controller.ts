@@ -26,25 +26,15 @@ export class AuthController{
     async login(@Body() dto: LoginAuthDto) {
         const user = await this.authService.validateUser(dto.emailOrUsername, dto.password) as UserDocument;
 
-    if (!user) {
-        throw new HttpException('Usuario o contraseña incorrectos', HttpStatus.UNAUTHORIZED);
-    }
+        if (!user) {
+            throw new HttpException('Usuario o contraseña incorrectos', HttpStatus.UNAUTHORIZED);
+        }
 
-    const token = await this.authService.generateJwt(user);
+        const { user: userDetails, token } = await this.authService.login(user); 
 
-    await this.logsService.logLogin(user._id.toString());
-
-    return {
+        return {
             message: 'Login exitoso',
-            user: {
-            id: user._id,
-            nombre: user.nombre,
-            apellido: user.apellido,
-            email: user.email,
-            nombreUsuario: user.nombreUsuario,
-            perfil: user.perfil,
-            imagenPerfil: user.imagenPerfil,
-            },
+            user: userDetails, // Contiene nombre, apellido, etc. (sin password)
             token,
         };
     }

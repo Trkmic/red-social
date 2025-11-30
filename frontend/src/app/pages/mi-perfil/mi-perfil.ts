@@ -72,20 +72,34 @@ export class MiPerfil implements OnInit {
   ngOnInit(): void {
     const storedUser = this.authService.getUsuarioLogueado();
     
-    if (!storedUser?.id) {
-      window.location.href = '/login';
-      return;
-    }
+    // ❌ ELIMINAR ESTE BLOQUE:
+    // if (!storedUser?.id) { 
+    //   window.location.href = '/login'; 
+    //   return;
+    // }
 
-    if (this.usuarioLogueado?.nombreUsuario === 'pedrooo10') {
+    // Si el Guard permite el acceso, 'storedUser' debería ser válido
+    if (!storedUser || (!storedUser._id && !storedUser.id)) {
+        // En caso de un fallo inesperado (token válido, pero localStorage dañado)
+        this.authService.logout(false);
+        return;
+    }
+    
+    // Asignar el usuario logueado y verificar si es admin
+    this.usuarioLogueado = storedUser;
+
+    if (this.usuarioLogueado.nombreUsuario === 'pedrooo10') {
       this.isAdmin = true;
     }
 
     // Lógica para obtener el ID de la URL o el ID del usuario logueado
     this.route.params.subscribe(params => {
-            this.userIdAVisualizar = params['id'] || storedUser._id || storedUser.id;
+            // Asegúrate de usar storedUser.id si _id no está disponible.
+            const userIdentifier = storedUser._id || storedUser.id;
+            
+            this.userIdAVisualizar = params['id'] || userIdentifier;
       
-            this.isOwner = (this.userIdAVisualizar === (storedUser._id || storedUser.id));
+            this.isOwner = (this.userIdAVisualizar === userIdentifier);
       
             if (this.userIdAVisualizar) {
                 this.cargarPerfil(this.userIdAVisualizar);

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable,UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
@@ -14,6 +14,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(payload: any) {
+        // 🛡️ VALIDACIÓN DE SEGURIDAD
+        // Si el token no tiene 'sub' (ID de usuario), lo rechazamos.
+        if (!payload.sub) {
+            throw new UnauthorizedException('Token inválido: falta el ID de usuario (sub)');
+        }
+
         return { 
             _id: payload.sub, 
             nombreUsuario: payload.nombreUsuario, 

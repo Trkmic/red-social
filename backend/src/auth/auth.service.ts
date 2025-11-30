@@ -5,12 +5,14 @@ import * as bcrypt from 'bcrypt';
 import { User, UserDocument } from './user.schema';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { JwtService } from '@nestjs/jwt';
+import { LogsService } from '../logs/logs.service';
 
 @Injectable()
 export class AuthService {
     constructor(
         @InjectModel(User.name) private userModel: Model<UserDocument>,
         private jwtService: JwtService,
+        private readonly logsService: LogsService,
     ) {}
 
     async generateJwt(user: UserDocument) {
@@ -77,4 +79,15 @@ export class AuthService {
         return await usuario.save();
     }
     
+    async login(user: UserDocument) {
+        // 1. Logear el ingreso
+        await this.logsService.logLogin(user._id.toString()); 
+        
+        // 2. Generar el JWT
+        const token = await this.generateJwt(user);
+        
+        // 3. Devolver el usuario (sin password) y el token
+        const { password, ...result } = user.toObject();
+        return { user: result, token };
+    }
 }
