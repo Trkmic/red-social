@@ -44,20 +44,27 @@ export class EstadisticasService {
             cantidad: { $sum: 1 },
             },
         },
+        // CORRECCIÓN: Convertir el ID a ObjectId para asegurar que coincida con la colección 'users'
+        {
+            $addFields: {
+                userObjectId: { $toObjectId: '$_id' }
+            }
+        },
         {
             $lookup: {
             from: 'users', 
-            localField: '_id',
+            localField: 'userObjectId', // Usamos el campo convertido
             foreignField: '_id',
             as: 'usuarioDetalle',
             },
         },
-        { $unwind: '$usuarioDetalle' },
+        { $unwind: { path: '$usuarioDetalle', preserveNullAndEmptyArrays: true } },
         {
             $project: {
             _id: 0,
             usuarioId: '$_id',
-            nombreUsuario: '$usuarioDetalle.nombreUsuario',
+            // Ahora debería encontrar el nombre correctamente
+            nombreUsuario: { $ifNull: ['$usuarioDetalle.nombreUsuario', 'Usuario Eliminado'] },
             cantidad: '$cantidad',
             },
         },
@@ -130,18 +137,23 @@ export class EstadisticasService {
                 },
             },
             {
+                $addFields: {
+                    userObjectId: { $toObjectId: '$_id' }
+                }
+            },    
+            {
                 $lookup: {
                 from: 'users',
-                localField: '_id',
+                localField: 'userObjectId',
                 foreignField: '_id',
                 as: 'usuarioDetalle',
                 },
             },
-            { $unwind: '$usuarioDetalle' },
+            { $unwind: { path: '$usuarioDetalle', preserveNullAndEmptyArrays: true } },
             {
                 $project: {
                 _id: 0,
-                nombreUsuario: '$usuarioDetalle.nombreUsuario',
+                nombreUsuario: { $ifNull: ['$usuarioDetalle.nombreUsuario', '📈📉'] },
                 cantidad: '$cantidad',
                 },
             },
