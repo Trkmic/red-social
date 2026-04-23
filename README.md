@@ -49,11 +49,13 @@ El sistema permite a los usuarios interactuar a través de publicaciones, coment
 
 cd backend
 npm install
-# Configurar variables de entorno (.env) para MongoDB y Cloudinary
+Configurar variables de entorno (.env) para MongoDB y Cloudinary
 npm run start:dev
 
 ### Configurar Frontend
 
 cd frontend
+
 npm install
+
 ng serve
